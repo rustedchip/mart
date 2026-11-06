@@ -1,5 +1,5 @@
 import React from 'react';
-import { Wrench } from 'lucide-react';
+import { Store } from 'lucide-react';
 import clsx from 'clsx';
 
 export default function Logo({ className }) {
@@ -10,7 +10,7 @@ export default function Logo({ className }) {
                 className
             )}
         >
-            <Wrench className="h-5 w-5" strokeWidth={2.5} />
+            <Store className="h-5 w-5" strokeWidth={2.2} />
         </span>
     );
 }

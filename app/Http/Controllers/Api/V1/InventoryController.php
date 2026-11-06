@@ -11,7 +11,6 @@ use App\Models\InvoiceItem;
 use App\Models\Log;
 use App\Models\Notification;
 use App\Models\Payment;
-use App\Models\Repair;
 use App\Models\Setting;
 use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
@@ -409,47 +408,6 @@ class InventoryController extends Controller
         return $this->success($inventory_transaction, Lang::get('repair-business.error_transaction-has-been-created'), 201);
     }
 
-    public function sellOnRepair($repairId, $productId)
-    {
-        $product = InventoryProduct::find($productId);
-        $repair = Repair::find($repairId);
-
-        if (!$product || !$repair) {
-            return $this->error(Lang::get('repair-business.error_not-found'), 404);
-        }
-
-        if ($this->productStock($product) <= 0) {
-            return $this->error(Lang::get('repair-business.error_product-is-out-of-stock'), 422);
-        }
-
-        $check_transaction = InventoryTransaction::where('product_id', $productId)->where('repair_id', $repairId)->first();
-
-        if ($check_transaction) {
-            $inventory_transaction = $check_transaction;
-            $inventory_transaction->quantity = $inventory_transaction->quantity + 1;
-            $inventory_transaction->save();
-        } else {
-            $inventory_transaction = new InventoryTransaction;
-            $inventory_transaction->product_id = $productId;
-            $inventory_transaction->repair_id = $repairId;
-            $inventory_transaction->transaction = 'sell';
-            $inventory_transaction->selling_price = $product->selling_price;
-            $inventory_transaction->quantity = 1;
-            $inventory_transaction->save();
-        }
-
-        Notification::syncProductStock($product);
-
-        $log = new Log;
-        $log->table = 'inventory_transactions';
-        $log->data = 'Inventory Transaction has been Created';
-        $log->ref = $inventory_transaction->id;
-        $log->user = Auth::id();
-        $log->save();
-
-        return $this->success($inventory_transaction, Lang::get('repair-business.transaction-has-been-created'), 201);
-    }
-
     public function sellOnInvoice(Request $request, $invoiceId, $productId)
     {
         $quantity = $request->has('quantity') ? $request->quantity : 1;
@@ -583,11 +541,7 @@ class InventoryController extends Controller
                 return $this->error(Lang::get('repair-business.error_not-found'), 404);
             }
         } else {
-            $repair = Repair::find($id);
-
-            if (!$repair || (int)$transaction->repair_id !== (int)$repair->id) {
-                return $this->error(Lang::get('repair-business.error_not-found'), 404);
-            }
+            return $this->error(Lang::get('repair-business.error_not-found'), 404);
         }
 
         $product = InventoryProduct::find($transaction->product_id);

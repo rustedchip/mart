@@ -3,7 +3,7 @@ import api, { getToken, hasLocale, setLocale, setToken } from '../api/client';
 
 const AuthContext = createContext(null);
 
-const DEFAULT_APP_NAME = 'Repair Business';
+const DEFAULT_APP_NAME = 'Mart';
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);

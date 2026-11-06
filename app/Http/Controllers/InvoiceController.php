@@ -19,8 +19,6 @@ use App\Models\InvoiceSetting;
 use App\Models\Invoice;
 use App\Models\Log;
 use App\Models\Payment;
-use App\Models\RepairItem;
-use App\Models\Repair;
 use App\Models\Setting;
 
 class InvoiceController extends Controller
@@ -76,123 +74,36 @@ class InvoiceController extends Controller
 
     public function create_invoice($id, $task)
     {
-
-        if ($task == 'view_repair') {
-
-            $repair = Repair::findOrFail($id);
-
-            /* business-profile */
-            $business_profile_settings = Setting::where('group', 'business_profile')->get();
-            $company_profile = (object)[];
-            foreach ($business_profile_settings as $setting) {
-                $company_profile->{$setting->name} = $setting->data;
-            }
-
-
-            $invoice_tax_string = Setting::where('name', 'invoice_tax')->where('group', 'tax')->firstOrFail();
-            $invoice_tax = (float)$invoice_tax_string->data;
-
-            $jobs = RepairItem::where('repair', $id)->where('group', 'job')->get();
-            $job_data = 'JOBS: ';
-            if ($jobs) {
-                foreach ($jobs as $job) {
-                    $job_data .= '[' . $job->data . ']';
-                }
-            }
-
-            $invoice = new Invoice;
-
-            if (isset($repair->customer)) {
-
-                $invoice->customer_id = $repair->customer_data->id;
-                $invoice->customer_name = $repair->customer_data->first_name . ' ' . $repair->customer_data->last_name;
-                $invoice->customer_phone = preg_replace("/^(\d{3})(\d{3})(\d{4})$/", "$1-$2-$3", $repair->customer_data->phone);
-                $invoice->customer_email = $repair->customer_data->email;
-                $invoice->customer_address = $repair->customer_data->address . ' ' . $repair->customer_data->city . ' ' . $repair->customer_data->state . ' ' . $repair->customer_data->zip;
-                $invoice->customer_company = $repair->customer_data->company;
-            }
-
-            $invoice->company_name = $company_profile->name;
-            $invoice->company_phone =  preg_replace("/^(\d{3})(\d{3})(\d{4})$/", "$1-$2-$3", $company_profile->phone);
-            $invoice->company_email = $company_profile->email;
-            $invoice->company_address = $company_profile->address;
-
-            $invoice->active = 'yes';
-            $invoice->user = Auth::user()->id;
-            $invoice->save();
-
-
-            $invoice_item = new InvoiceItem;
-            $invoice_item->invoice = $invoice->id;
-            $invoice_item->name = 'REPAIR #' . $repair->id;
-            $invoice_item->description = $repair->request . ' ' . $repair->target;
-            $invoice_item->sub_description = $job_data;
-            if (isset($repair->estimate)) {
-                $invoice_item->unit_cost = $repair->estimate;
-            } else {
-                $invoice_item->unit_cost = 0;
-            }
-            $invoice_item->quantity = 1;
-            $invoice_item->ref = $id;
-            $invoice_item->total = $repair->estimate * 1;
-            $invoice_item->group = 'repair';
-            $invoice_item->save();
-
-            $invoice->tax_porcentage = $invoice_tax;
-            $invoice->subtotal = (float)$invoice_item->total;
-            $invoice->tax = (float)($invoice_item->total / 100) *  $invoice_tax;
-            $invoice->total = (float)$invoice_item->total + (($invoice_item->total / 100) *  $invoice_tax);
-            $invoice->balance = (float)$invoice_item->total + (($invoice_item->total / 100) *  $invoice_tax);
-            $invoice->save();
-
-
-
-            $log = new Log;
-            $log->table = 'invoices';
-            $log->data = 'Invoice has been Created';
-            $log->ref = $invoice->id;
-            $log->user = Auth::user()->id;
-            $log->save();
+        /* business-profile */
+        $business_profile_settings = Setting::where('group', 'business_profile')->get();
+        $company_profile = (object)[];
+        foreach ($business_profile_settings as $setting) {
+            $company_profile->{$setting->name} = $setting->data;
         }
 
-        if ($task == 'empty') {
+        $invoice_tax_string = Setting::where('name', 'invoice_tax')->where('group', 'tax')->firstOrFail();
+        $invoice_tax = (float)$invoice_tax_string->data;
 
-            /* business-profile */
-            $business_profile_settings = Setting::where('group', 'business_profile')->get();
-            $company_profile = (object)[];
-            foreach ($business_profile_settings as $setting) {
-                $company_profile->{$setting->name} = $setting->data;
-            }
+        $invoice = new Invoice;
+        $invoice->company_name = $company_profile->name;
+        $invoice->company_phone = preg_replace("/^(\d{3})(\d{3})(\d{4})$/", "$1-$2-$3", $company_profile->phone);
+        $invoice->company_email = $company_profile->email;
+        $invoice->company_address = $company_profile->address;
+        $invoice->tax_porcentage = $invoice_tax;
+        $invoice->subtotal = 0;
+        $invoice->tax = 0;
+        $invoice->total = 0;
+        $invoice->balance = 0;
+        $invoice->active = 'yes';
+        $invoice->user = Auth::user()->id;
+        $invoice->save();
 
-
-
-
-
-            $invoice_tax_string = Setting::where('name', 'invoice_tax')->where('group', 'tax')->firstOrFail();
-            $invoice_tax = (float)$invoice_tax_string->data;
-
-            $invoice = new Invoice;
-            $invoice->company_name = $company_profile->name;
-            $invoice->company_phone = preg_replace("/^(\d{3})(\d{3})(\d{4})$/", "$1-$2-$3", $company_profile->phone);
-            $invoice->company_email = $company_profile->email;
-            $invoice->company_address = $company_profile->address;
-            $invoice->tax_porcentage = $invoice_tax;
-            $invoice->subtotal = 0;
-            $invoice->tax = 0;
-            $invoice->total = 0;
-            $invoice->balance = 0;
-            $invoice->active = 'yes';
-            $invoice->user = Auth::user()->id;
-            $invoice->save();
-
-
-            $log = new Log;
-            $log->table = 'invoices';
-            $log->data = 'Invoice has been Created';
-            $log->ref = $invoice->id;
-            $log->user = Auth::user()->id;
-            $log->save();
-        }
+        $log = new Log;
+        $log->table = 'invoices';
+        $log->data = 'Invoice has been Created';
+        $log->ref = $invoice->id;
+        $log->user = Auth::user()->id;
+        $log->save();
 
         return redirect()->route('view-invoice', $invoice->id)->with('error',Lang::get('repair-business.error_invoice-has-been-created'))->with('alert', 'alert-success');
     }
@@ -547,68 +458,6 @@ class InvoiceController extends Controller
     /* END SETTINGS */
 
     /* ITMES */
-
-
-
-    public function create_item_repair_invoice($repair, $invoice)
-    {
-        $invoice_data = Invoice::findOrFail($invoice);
-        $repair = Repair::findOrFail($repair);
-
-        $jobs = RepairItem::where('repair', $repair->id)->where('group', 'job')->get();
-        $job_data = 'JOBS: ';
-        if ($jobs) {
-            foreach ($jobs as $job) {
-                $job_data .= '[' . $job->data . ']';
-            }
-        }
-
-        $invoice_item = new InvoiceItem;
-        $invoice_item->invoice = $invoice;
-        $invoice_item->name = 'REPAIR #' . $repair->id;
-        $invoice_item->description = $repair->request . ' ' . $repair->target;
-        $invoice_item->sub_description = $job_data;
-        if (isset($repair->estimate)) {
-            $invoice_item->unit_cost = $repair->estimate;
-        } else {
-            $invoice_item->unit_cost = 0;
-        }
-        $invoice_item->quantity = 1;
-        $invoice_item->ref = $invoice;
-        $invoice_item->total = $repair->estimate * 1;
-        $invoice_item->group = 'repair';
-        $invoice_item->save();
-
-
-
-        $transactions_sum = 0;
-        $transactions = InventoryTransaction::where('invoice_id', $invoice)->get();
-        foreach ($transactions as $transaction) {
-            $transactions_sum = $transactions_sum + ($transaction->selling_price * $transaction->quantity);
-        }
-
-
-        $items_sum = InvoiceItem::where('invoice', $invoice)->sum('total') + $transactions_sum;
-        $payments_sum = Payment::where('invoice', $invoice)->sum('amount');
-
-
-
-        $invoice_data->subtotal = (float)$items_sum;
-        $invoice_data->tax = (float)($items_sum / 100) *  (float)$invoice_data->tax_porcentage;
-        $invoice_data->total = (float)$items_sum + (($items_sum / 100) *  (float)$invoice_data->tax_porcentage);
-        $invoice_data->balance = ((float)$items_sum + (($items_sum / 100) *  (float)$invoice_data->tax_porcentage)) - $payments_sum;
-        $invoice_data->save();
-
-
-        $log = new Log;
-        $log->table = 'invoices';
-        $log->data = 'Invoice Item has been Created';
-        $log->ref = $invoice;
-        $log->user = Auth::user()->id;
-        $log->save();
-
-        return redirect()->route('view-invoice', $invoice)->with('error',Lang::get('repair-business.error_item-has-been-created' )  )->with('alert', 'alert-success');
-    }
 
     public function create_item_invoice(request $request, $id)
     {

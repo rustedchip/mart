@@ -12,7 +12,6 @@ use App\Http\Controllers\Api\V1\InvoiceController;
 use App\Http\Controllers\Api\V1\LogController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\PaymentController;
-use App\Http\Controllers\Api\V1\RepairController;
 use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\SettingController;
 use App\Http\Controllers\Api\V1\TrashController;
@@ -53,23 +52,6 @@ Route::prefix('v1')->group(function () {
     Route::put('/customers/{id}/restore', [CustomerController::class, 'restore'])->middleware(['auth:sanctum', 'api.locale']);
     Route::delete('/customers/{id}', [CustomerController::class, 'destroy'])->middleware(['auth:sanctum', 'api.admin', 'api.locale']);
 
-    Route::get('/repairs', [RepairController::class, 'index'])->middleware(['auth:sanctum', 'api.locale']);
-    Route::post('/repairs', [RepairController::class, 'store'])->middleware(['auth:sanctum', 'api.locale']);
-    Route::get('/repairs/settings', [RepairController::class, 'settingsIndex'])->middleware(['auth:sanctum', 'api.admin', 'api.locale']);
-    Route::post('/repairs/settings', [RepairController::class, 'settingsCreate'])->middleware(['auth:sanctum', 'api.admin', 'api.locale']);
-    Route::put('/repairs/settings/{id}', [RepairController::class, 'settingsUpdate'])->middleware(['auth:sanctum', 'api.admin', 'api.locale']);
-    Route::delete('/repairs/settings/{id}', [RepairController::class, 'settingsDelete'])->middleware(['auth:sanctum', 'api.admin', 'api.locale']);
-    Route::get('/repairs/{id}', [RepairController::class, 'show'])->middleware(['auth:sanctum', 'api.locale']);
-    Route::put('/repairs/{id}', [RepairController::class, 'update'])->middleware(['auth:sanctum', 'api.locale']);
-    Route::put('/repairs/{id}/assign-customer/{customer}', [RepairController::class, 'assignCustomer'])->middleware(['auth:sanctum', 'api.locale']);
-    Route::put('/repairs/{id}/delete', [RepairController::class, 'softDelete'])->middleware(['auth:sanctum', 'api.locale']);
-    Route::put('/repairs/{id}/restore', [RepairController::class, 'restore'])->middleware(['auth:sanctum', 'api.locale']);
-    Route::delete('/repairs/{id}', [RepairController::class, 'destroy'])->middleware(['auth:sanctum', 'api.admin', 'api.locale']);
-    Route::get('/repairs/{id}/print', [RepairController::class, 'printReceipt'])->middleware(['auth:sanctum', 'api.locale']);
-    Route::post('/repairs/{id}/mail', [RepairController::class, 'mailReceipt'])->middleware(['auth:sanctum', 'api.locale']);
-    Route::post('/repairs/{id}/items', [RepairController::class, 'createItem'])->middleware(['auth:sanctum', 'api.locale']);
-    Route::delete('/repairs/items/{item}', [RepairController::class, 'deleteItem'])->middleware(['auth:sanctum', 'api.locale']);
-
     Route::get('/inventory/categories', [InventoryController::class, 'categoriesIndex'])->middleware(['auth:sanctum', 'api.locale']);
     Route::post('/inventory/categories', [InventoryController::class, 'categoriesCreate'])->middleware(['auth:sanctum', 'api.locale']);
     Route::put('/inventory/categories/{id}', [InventoryController::class, 'categoriesUpdate'])->middleware(['auth:sanctum', 'api.locale']);
@@ -88,16 +70,13 @@ Route::prefix('v1')->group(function () {
     Route::put('/inventory/transactions/{id}', [InventoryController::class, 'transactionsUpdate'])->middleware(['auth:sanctum', 'api.locale']);
     Route::delete('/inventory/transactions/{id}', [InventoryController::class, 'transactionsDelete'])->middleware(['auth:sanctum', 'api.locale']);
 
-    Route::post('/inventory/repairs/{repair}/products/{product}/sell', [InventoryController::class, 'sellOnRepair'])->middleware(['auth:sanctum', 'api.locale']);
     Route::post('/inventory/invoices/{invoice}/products/{product}/sell', [InventoryController::class, 'sellOnInvoice'])->middleware(['auth:sanctum', 'api.locale']);
     Route::delete('/inventory/{task}/{id}/transactions/{transaction}', [InventoryController::class, 'cancelTransaction'])->middleware(['auth:sanctum', 'api.locale']);
     Route::put('/inventory/{task}/{id}/transactions/{transaction}', [InventoryController::class, 'updateTransactionQuantity'])->middleware(['auth:sanctum', 'api.locale']);
 
     Route::post('/barcode', [BarcodeController::class, 'scan'])->middleware(['auth:sanctum', 'api.locale']);
     Route::post('/barcode/invoice', [BarcodeController::class, 'scanInvoice'])->middleware(['auth:sanctum', 'api.locale']);
-    Route::post('/barcode/repair', [BarcodeController::class, 'scanRepair'])->middleware(['auth:sanctum', 'api.locale']);
 
-    Route::post('/invoices/items/create-repair/{repair}/{invoice}', [InvoiceController::class, 'createRepairItem'])->middleware(['auth:sanctum', 'api.locale']);
     Route::get('/invoices', [InvoiceController::class, 'index'])->middleware(['auth:sanctum', 'api.locale']);
     Route::post('/invoices', [InvoiceController::class, 'create'])->middleware(['auth:sanctum', 'api.locale']);
     Route::get('/invoices/{id}', [InvoiceController::class, 'show'])->middleware(['auth:sanctum', 'api.locale']);

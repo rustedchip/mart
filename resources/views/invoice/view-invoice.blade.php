@@ -119,11 +119,6 @@
                 </a>
             </div>
             <div class="col-sm">
-                <a href="{{ route('index-repair', [($task = 'invoice'), $invoice]) }}"
-                    class="btn btn-primary btn-sm btn-block mb-1"><i class="fas fa-plus"></i>
-                    {{ __('repair-business.button_repair') }}</a>
-            </div>
-            <div class="col-sm">
                 <a href="{{ route('inventory-index-product', [($task = 'invoice'), $invoice]) }}"
                     class="btn btn-primary btn-sm btn-block mb-1"><i class="fas fa-plus"></i>
                     {{ __('repair-business.button_product') }}</a>

@@ -11,10 +11,6 @@ import AdminOnlyRoute from './auth/AdminOnlyRoute';
 import CustomersList from './pages/customers/CustomersList';
 import CustomerForm from './pages/customers/CustomerForm';
 import CustomerView from './pages/customers/CustomerView';
-import RepairsList from './pages/repairs/RepairsList';
-import RepairForm from './pages/repairs/RepairForm';
-import RepairSettings from './pages/repairs/RepairSettings';
-import RepairView from './pages/repairs/RepairView';
 import ProductsList from './pages/inventory/ProductsList';
 import ProductForm from './pages/inventory/ProductForm';
 import ProductView from './pages/inventory/ProductView';
@@ -59,17 +55,6 @@ export default function App() {
                 <Route path="customers/create" element={<CustomerForm />} />
                 <Route path="customers/:id" element={<CustomerView />} />
                 <Route path="customers/:id/edit" element={<CustomerForm />} />
-                <Route path="repairs" element={<RepairsList />} />
-                <Route path="repairs/create" element={<RepairForm />} />
-                <Route
-                    path="repairs/settings"
-                    element={
-                        <AdminOnlyRoute>
-                            <RepairSettings />
-                        </AdminOnlyRoute>
-                    }
-                />
-                <Route path="repairs/:id" element={<RepairView />} />
                 <Route path="invoices" element={<InvoicesList />} />
                 <Route path="invoices/create" element={<InvoiceForm />} />
                 <Route path="invoices/:id" element={<InvoiceView />} />

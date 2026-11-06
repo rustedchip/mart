@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\InvoiceSetting;
-use App\Models\Repair;
 use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
 
@@ -30,17 +29,6 @@ class TrashController extends Controller
             ->orderBy('created_at', 'DESC')
             ->get();
 
-        $search_repair = Repair::select('id')
-            ->where('target', 'LIKE', '%' . $search . '%')
-            ->orWhere('request', 'LIKE', '%' . $search . '%')
-            ->orWhereIn('customer', $search_customer);
-
-        $repairs = Repair::with('customer_data')
-            ->whereIn('id', $search_repair)
-            ->where('active', 'no')
-            ->orderBy('created_at', 'DESC')
-            ->get();
-
         $search_priority = InvoiceSetting::select('id')
             ->where('name', 'LIKE', '%' . $search . '%');
 
@@ -58,7 +46,6 @@ class TrashController extends Controller
 
         return $this->success([
             'customers' => $customers,
-            'repairs' => $repairs,
             'invoices' => $invoices,
             'search' => $search,
         ]);

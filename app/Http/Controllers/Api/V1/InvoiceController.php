@@ -12,8 +12,6 @@ use App\Models\InvoiceSetting;
 use App\Models\Log;
 use App\Models\Notification;
 use App\Models\Payment;
-use App\Models\Repair;
-use App\Models\RepairItem;
 use App\Models\Setting;
 use App\Traits\ApiResponses;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -47,16 +45,6 @@ class InvoiceController extends Controller
     protected function formatPhone($phone)
     {
         return preg_replace("/^(\d{3})(\d{3})(\d{4})$/", "$1-$2-$3", $phone);
-    }
-
-    protected function repairJobsText($repairId)
-    {
-        $jobs = RepairItem::where('repair', $repairId)->where('group', 'job')->get();
-        $job_data = 'JOBS: ';
-        foreach ($jobs as $job) {
-            $job_data .= '[' . $job->data . ']';
-        }
-        return $job_data;
     }
 
     protected function applyCompany(Invoice $invoice, $profile)
@@ -153,19 +141,11 @@ class InvoiceController extends Controller
         $logs = Log::with('user_data')->where('table', 'invoices')->where('ref', $invoice->id)
             ->orderBy('created_at', 'DESC')->paginate(25);
 
-        $repair_ids = InvoiceItem::where('invoice', $invoice->id)->where('group', 'repair')->pluck('ref');
-        $repairs = $repair_ids->isNotEmpty()
-            ? Repair::with(['customer_data', 'status_data', 'priority_data'])
-                ->whereIn('id', $repair_ids)->where('active', 'yes')
-                ->orderBy('created_at', 'DESC')->get()
-            : collect();
-
         return $this->success([
             'invoice' => $invoice,
             'items' => $items,
             'transactions' => $transactions,
             'payments' => $payments,
-            'repairs' => $repairs,
             'logs' => $logs,
             'statuses' => InvoiceSetting::where('group', 'status')->orderBy('name')->get(),
         ]);
@@ -174,7 +154,6 @@ class InvoiceController extends Controller
     public function create(Request $request)
     {
         $data = $request->validate([
-            'repair' => 'nullable|numeric|exists:repairs,id',
             'customer' => 'nullable|numeric|exists:customers,id',
         ]);
 
@@ -197,28 +176,6 @@ class InvoiceController extends Controller
             if ($customer) {
                 $this->applyCustomer($invoice, $customer);
                 $invoice->save();
-            }
-        }
-
-        if (!empty($data['repair'])) {
-            $repair = Repair::find($data['repair']);
-            if ($repair) {
-                if ($repair->customer_data) {
-                    $this->applyCustomer($invoice, $repair->customer_data);
-                }
-                $invoice->save();
-
-                $item = new InvoiceItem;
-                $item->invoice = $invoice->id;
-                $item->name = 'REPAIR #' . $repair->id;
-                $item->description = trim(($repair->request ?? '') . ' ' . ($repair->target ?? ''));
-                $item->sub_description = $this->repairJobsText($repair->id);
-                $item->unit_cost = isset($repair->estimate) ? (float)$repair->estimate : 0;
-                $item->quantity = 1;
-                $item->ref = $repair->id;
-                $item->group = 'repair';
-                $item->total = (float)$item->unit_cost * (float)$item->quantity;
-                $item->save();
             }
         }
 
@@ -662,39 +619,6 @@ class InvoiceController extends Controller
         $this->recomputeInvoice($invoice);
 
         return $this->success(['id' => (int)$itemId], Lang::get('repair-business.error_item-has-been-deleted'));
-    }
-
-    public function createRepairItem($repairId, $invoiceId)
-    {
-        $invoice = Invoice::find($invoiceId);
-        $repair = Repair::find($repairId);
-
-        if (!$invoice || !$repair) {
-            return $this->error(Lang::get('repair-business.error_not-found'), 404);
-        }
-
-        $invoice_item = new InvoiceItem;
-        $invoice_item->invoice = $invoice->id;
-        $invoice_item->name = 'REPAIR #' . $repair->id;
-        $invoice_item->description = trim(($repair->request ?? '') . ' ' . ($repair->target ?? ''));
-        $invoice_item->sub_description = $this->repairJobsText($repair->id);
-        $invoice_item->unit_cost = isset($repair->estimate) ? (float)$repair->estimate : 0;
-        $invoice_item->quantity = 1;
-        $invoice_item->ref = $repair->id;
-        $invoice_item->group = 'repair';
-        $invoice_item->total = (float)$invoice_item->unit_cost * (float)$invoice_item->quantity;
-        $invoice_item->save();
-
-        $this->recomputeInvoice($invoice);
-
-        $log = new Log;
-        $log->table = 'invoices';
-        $log->data = 'Invoice Item has been Created';
-        $log->ref = $invoice->id;
-        $log->user = Auth::id();
-        $log->save();
-
-        return $this->success(['item' => $invoice_item], Lang::get('repair-business.error_item-has-been-created'), 201);
     }
 
     /* SETTINGS */

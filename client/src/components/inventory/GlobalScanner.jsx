@@ -171,23 +171,6 @@ export default function GlobalScanner() {
                     </div>
                 )}
 
-                {response === 'repair-found' && data && (
-                    <div className="mt-4 space-y-4">
-                        <div className="rounded-xl border border-slate-200 p-4">
-                            <p className="font-mono text-xs uppercase tracking-wide text-blue-700">
-                                {t('scanner.repair_found')}
-                            </p>
-                            <p className="mt-1 font-semibold text-slate-900">{t('inventory.repair_source', { id: data.id })}</p>
-                            {data.device_model && (
-                                <p className="text-sm text-slate-500">{data.device_model}</p>
-                            )}
-                        </div>
-                        <Link to={`/repairs/${data.id}`} onClick={() => setResult(null)}>
-                            <Button className="w-full">{t('scanner.open_repair')}</Button>
-                        </Link>
-                    </div>
-                )}
-
                 {response === 'barcode-not-found' && (
                     <div className="mt-4 space-y-4">
                         <div className="rounded-xl border border-red-200 bg-red-50 p-4">

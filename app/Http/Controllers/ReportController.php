@@ -10,7 +10,6 @@ use \Illuminate\Support\Facades\Lang;
 use App\Models\Invoice;
 use App\Models\Log;
 use App\Models\Payment;
-use App\Models\Repair;
 
 class ReportController extends Controller
 {
@@ -119,7 +118,6 @@ class ReportController extends Controller
 
         $report_data= array(
             'invoices' => $request->invoices,
-            'repairs' => $request->repairs,
             'payments' => $request->payments,
             'from' => $request->from,
             'to' => $request->to,
@@ -139,19 +137,6 @@ class ReportController extends Controller
             $invoice_data = null;
         }
 
-        if($request->repairs == 'on'){
-
-            $repairs = Repair::where('active','yes')->whereDate('created_at','>=',$request->from)->whereDate('created_at','<=',$request->to)->get();
-            $repair_data = array(
-                'count' => Repair::where('active','yes')->whereDate('created_at','>=',$request->from)->whereDate('created_at','<=',$request->to)->count(),
-            );
-
-        }else{
-
-            $repairs = null;
-            $repair_data = null;
-        }
-
         if($request->payments == 'on'){
             $payments = Payment::where('active','yes')->whereDate('created_at','>=',$request->from)->whereDate('created_at','<=',$request->to)->get(); 
             $payment_data = array(
@@ -167,25 +152,18 @@ class ReportController extends Controller
 
             $payments = null;
             $payment_data = null;
-
-            
         }
 
-
-        
-        
-
-        return view('report.get-report',compact('invoices','invoice_data','repairs','repair_data','payments','payment_data','report_data'));
+        return view('report.get-report',compact('invoices','invoice_data','payments','payment_data','report_data'));
         
     }
 
 
-    public function print_report($report_from,$report_to,$report_invoices,$report_repairs,$report_payments)
+    public function print_report($report_from,$report_to,$report_invoices,$report_payments)
     {
 
         $report_data= array(
             'invoices' => $report_invoices,
-            'repairs' => $report_repairs,
             'payments' => $report_payments,
             'from' => $report_from,
             'to' => $report_to,
@@ -198,9 +176,7 @@ class ReportController extends Controller
         'balance' => Invoice::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->sum('balance'),
         'count' => Invoice::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->count(),
         );
-        $repair_data = array(
-            'count' => Repair::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->count(),
-        );
+
         $payment_data = array(
             'count' => Payment::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->count(), 
             'total' => Payment::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->sum('amount'), 
@@ -210,13 +186,9 @@ class ReportController extends Controller
             'total_other' => Payment::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->where('method','other')->sum('amount'), 
         );
 
-
-
-
-        $repairs = Repair::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->get();
         $payments = Payment::where('active','yes')->whereDate('created_at','>=',$report_from)->whereDate('created_at','<=',$report_to)->get(); 
 
-        return view('report.print-report',compact('invoices','invoice_data','repairs','repair_data','payments','payment_data','report_data'));
+        return view('report.print-report',compact('invoices','invoice_data','payments','payment_data','report_data'));
         
     }
 

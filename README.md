@@ -5,9 +5,9 @@
 ![MYSQL](github-media/mysql.svg)
 ![GOOGLE CLOUD](github-media/google-cloud.svg)
 
-# REPAIR BUSINESS
+# MART
 
-*Seamlessly handle repairs, invoices, payments, and generate reports in a `fast-paced repair business environment`.*
+*Seamlessly handle invoices, payments, inventory, and generate reports in a `fast-paced business environment`.*
 
 ## Highlights
 - Laravel 8 JSON API + PHP 8.1
@@ -15,8 +15,8 @@
 - MySQL 8.4
 - Single multi-stage Docker image — Apache serves the React SPA and the `/api/*` backend on port 80
 - Docker Compose (ports mapped via `.env`) · Google Cloud-ready
-- Barcode scanning for fast POS checkout (invoice / drop-off repair)
-- Invoice & drop-off receipt as printable PDF (thermal-printer friendly) + email delivery
+- Barcode scanning for fast POS checkout (invoice / product lookup)
+- Invoice receipt as printable PDF (thermal-printer friendly) + email delivery
 - i18n (English / Español), roles (user / admin), soft-delete trash, notifications, reports
 
 ## Tech Stack
@@ -40,7 +40,7 @@ Compose maps that port through `.env` (`SERVICE_PORT` → 80) plus a dev-only Vi
 ```
 cp .env.example .env           # set APP_KEY, DB credentials, SERVICE_PORT, CLIENT_PORT
 docker compose up -d           # builds image, starts app + optional dev client
-docker exec -w /var/www repair-business-app php artisan migrate --seed
+docker exec -w /var/www mart-dev php artisan migrate --seed
 ```
 Open `http://localhost:${SERVICE_PORT}`. The same image deploys to Google Cloud unchanged (serves TCP 80; set `APP_URL`/env via the Laravel `.env` at deploy time).
 
@@ -55,8 +55,8 @@ Because `public/`, `vendor/`, `storage/`, and `bootstrap/cache` are anonymous im
 
 Commands:
 ```
-docker exec -w /var/www repair-business-app php artisan migrate --seed
-docker exec -w /var/www repair-business-app ./vendor/bin/phpunit
+docker exec -w /var/www mart-dev php artisan migrate --seed
+docker exec -w /var/www mart-dev ./vendor/bin/phpunit
 docker exec mysql_development mysqldump -u <user> -p <db> > backup.sql
 ```
 

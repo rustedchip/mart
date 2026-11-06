@@ -3,10 +3,8 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\InvoiceItem;
 use App\Models\Invoice;
 use App\Models\Payment;
-use App\Models\Repair;
 use App\Traits\ApiResponses;
 
 class DashboardController extends Controller
@@ -55,14 +53,10 @@ class DashboardController extends Controller
 
         $unpaid_invoices = Invoice::where('balance', '>', 0)->where('active', 'yes')->count();
 
-        $repair_items = InvoiceItem::select('ref')->where('group', 'repair');
-        $repairs_no_invoice = Repair::whereNotIn('id', $repair_items)->where('active', 'yes')->count();
-
         return $this->success(compact(
             'current_year_income',
             'past_year_income',
-            'unpaid_invoices',
-            'repairs_no_invoice'
+            'unpaid_invoices'
         ));
     }
 }

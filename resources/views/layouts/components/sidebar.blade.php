@@ -1,10 +1,10 @@
 <ul class="navbar-nav bg-secondary sidebar sidebar-dark accordion @if (Session::has('sidebar-position')) @if (Session::get('sidebar-position') == 'close') toggled @endif @endif "
     id="accordionSidebar">
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('dashboard') }}">
-        <div class="sidebar-brand-icon rotate-n-15">
-            <i class="fas fa-wrench"></i>
+        <div class="sidebar-brand-icon">
+            <i class="fas fa-store"></i>
         </div>
-        <div class="sidebar-brand-text mx-3">{{ config('app.name', 'REPAIR-BUSINESS') }}</div>
+        <div class="sidebar-brand-text mx-3">{{ config('app.name', 'MART') }}</div>
     </a>
     <hr class="sidebar-divider my-0">
     <li class="nav-item">
@@ -26,24 +26,6 @@
                     href="{{ route('create-customer') }}">{{ __('repair-business.link_create-customer') }}</a>
                 <a class="collapse-item"
                     href="{{ route('index-customer') }}">{{ __('repair-business.link_customers') }}</a>
-            </div>
-        </div>
-    </li>
-    <hr class="sidebar-divider">
-    <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseRepairs"
-            aria-expanded="true" aria-controls="collapseRepairs">
-            <i class="fas fa-tools"></i>
-            <span>{{ __('repair-business.link_repairs') }}</span>
-        </a>
-        <div id="collapseRepairs" class="collapse" aria-labelledby="collapseRepairs" data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item"
-                    href="{{ route('create-repair') }}">{{ __('repair-business.link_create-repair') }}</a>
-                <a class="collapse-item"
-                    href="{{ route('index-repair') }}">{{ __('repair-business.link_repairs') }}</a>
-                <a class="collapse-item"
-                    href="{{ route('setting-repair') }}">{{ __('repair-business.link_settings') }}</a>
             </div>
         </div>
     </li>

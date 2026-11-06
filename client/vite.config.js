@@ -10,7 +10,7 @@ export default defineConfig({
         allowedHosts: ['builder', 'localhost', '127.0.0.1'],
         proxy: {
             '/api': {
-                target: 'http://repair-business-app:80',
+                target: 'http://mart-dev:80',
                 changeOrigin: true,
             },
         },

@@ -10,7 +10,6 @@ use App\Http\Controllers\LogController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\RepairController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
@@ -66,30 +65,6 @@ Route::put('/delete-customer/{id}', [CustomerController::class, 'delete_customer
 Route::put('/restore-customer/{id}', [CustomerController::class, 'restore_customer'])->name('restore-customer')->middleware('verified')->middleware('notification')->middleware('locale');    
 Route::delete('/destroy-customer/{id}', [CustomerController::class, 'destroy_customer'])->name('destroy-customer')->middleware('admin')->middleware('verified')->middleware('notification')->middleware('locale');    
 
-/* REPAIR ROUTES */
-Route::get('/index-repair/{task?}/{id?}', [RepairController::class, 'index_repair'])->name('index-repair')->middleware('verified')->middleware('notification')->middleware('locale'); 
-Route::post('/index-repair/{task?}/{id?}', [RepairController::class, 'index_repair'])->name('search-repair')->middleware('verified')->middleware('notification')->middleware('locale');    
-Route::get('/create-repair/{id?}', [RepairController::class, 'create_repair'])->name('create-repair')->middleware('verified')->middleware('notification')->middleware('locale');    
-Route::post('/new-repair/{id?}', [RepairController::class, 'new_repair'])->name('new-repair')->middleware('verified')->middleware('notification')->middleware('locale');    
-Route::get('/view-repair/{id}', [RepairController::class, 'view_repair'])->name('view-repair')->middleware('verified')->middleware('notification')->middleware('locale');   
-Route::put('/update-repair/{id}', [RepairController::class, 'update_repair'])->name('update-repair')->middleware('verified')->middleware('notification')->middleware('locale');   
-Route::put('/delete-repair/{id}', [RepairController::class, 'delete_repair'])->name('delete-repair')->middleware('verified')->middleware('notification')->middleware('locale');    
-Route::put('/restore-repair/{id}', [RepairController::class, 'restore_repair'])->name('restore-repair')->middleware('verified')->middleware('notification')->middleware('locale');    
-Route::delete('/destroy-repair/{id}', [RepairController::class, 'destroy_repair'])->name('destroy-repair')->middleware('admin')->middleware('verified')->middleware('notification')->middleware('locale');    
-Route::get('print-repair/{id}', [RepairController::class, 'print_repair'])->name('print-repair')->middleware('verified')->middleware('notification')->middleware('locale');    
-Route::get('mail-repair/{id}', [RepairController::class, 'mail_repair'])->name('mail-repair')->middleware('verified')->middleware('notification')->middleware('locale');   
-Route::put('/update-customer-repair/{customer}/{repair}', [RepairController::class, 'update_customer_repair'])->name('update-customer-repair')->middleware('verified')->middleware('notification')->middleware('locale');    
-
-/* REPAIR SETTINGS ROUTES */
-Route::get('/setting-repair', [RepairController::class, 'setting_repair'])->name('setting-repair')->middleware('admin')->middleware('verified')->middleware('notification')->middleware('locale');  
-Route::post('/setting-repair/create', [RepairController::class, 'create_setting_repair'])->name('create-setting-repair')->middleware('admin')->middleware('verified')->middleware('notification')->middleware('locale');   
-Route::put('/setting-repair/update/{id}', [RepairController::class, 'update_setting_repair'])->name('update-setting-repair')->middleware('admin')->middleware('verified')->middleware('notification')->middleware('locale'); 
-Route::delete('/setting-repair/delete/{id}', [RepairController::class, 'delete_setting_repair'])->name('delete-setting-repair')->middleware('admin')->middleware('verified')->middleware('notification')->middleware('locale');   
-
-/* REPAIR ITEMS ROUTES */
-Route::post('/item-repair/create/{id}', [RepairController::class, 'create_item_repair'])->name('create-item-repair')->middleware('verified')->middleware('notification')->middleware('locale');   
-Route::delete('/item-repair/delete/{id}', [RepairController::class, 'delete_item_repair'])->name('delete-item-repair')->middleware('verified')->middleware('notification')->middleware('locale');   
-
 /* INVOICE ROUTES */
 Route::get('/index-invoice/{task?}', [InvoiceController::class, 'index_invoice'])->name('index-invoice')->middleware('verified')->middleware('notification')->middleware('locale');    
 Route::post('/index-invoice/{task?}', [InvoiceController::class, 'index_invoice'])->name('search-invoice')->middleware('verified')->middleware('notification')->middleware('locale');   
@@ -101,11 +76,10 @@ Route::get('/email-invoice/{id}', [InvoiceController::class, 'email_invoice'])->
 Route::put('/delete-invoice/{id}', [InvoiceController::class, 'delete_invoice'])->name('delete-invoice')->middleware('verified')->middleware('notification')->middleware('locale');   
 Route::put('/restore-invoice/{id}', [InvoiceController::class, 'restore_invoice'])->name('restore-invoice')->middleware('verified')->middleware('notification')->middleware('locale');   
 Route::delete('/destroy-invoice/{id}', [InvoiceController::class, 'destroy_invoice'])->name('destroy-invoice')->middleware('admin')->middleware('verified')->middleware('notification')->middleware('locale');    
-Route::put('/update-customer-invoice/{customer}/{repair}', [InvoiceController::class, 'update_customer_invoice'])->name('update-customer-invoice')->middleware('verified')->middleware('notification')->middleware('locale');   
+Route::put('/update-customer-invoice/{customer}/{id}', [InvoiceController::class, 'update_customer_invoice'])->name('update-customer-invoice')->middleware('verified')->middleware('notification')->middleware('locale');   
 
 /* INVOICE ITEMS ROUTES */
 Route::post('/item-invoice/create/{id}', [InvoiceController::class, 'create_item_invoice'])->name('create-item-invoice')->middleware('verified')->middleware('notification')->middleware('locale');   
-Route::post('/item-invoice/create-repair/{repair}/{invoice}', [InvoiceController::class, 'create_item_repair_invoice'])->name('create-item-repair-invoice')->middleware('verified')->middleware('notification')->middleware('locale');    
 Route::put('/item-invoice/update/{id}', [InvoiceController::class, 'update_item_invoice'])->name('update-item-invoice')->middleware('verified')->middleware('notification')->middleware('locale');    
 Route::delete('/item-invoice/delete/{id}', [InvoiceController::class, 'delete_item_invoice'])->name('delete-item-invoice')->middleware('verified')->middleware('notification')->middleware('locale');   
 
@@ -120,7 +94,7 @@ Route::get('/create-report', [ReportController::class, 'create_report'])->name('
 Route::get('/create-register-report', [ReportController::class, 'create_register_report'])->name('create-register-report')->middleware('notification')->middleware('locale');    
 Route::post('/get-report', [ReportController::class, 'get_report'])->name('get-report')->middleware('notification')->middleware('locale');
 Route::post('/get-register-report', [ReportController::class, 'get_register_report'])->name('get-register-report')->middleware('notification')->middleware('locale');    
-Route::get('/print-report/{report_from}/{report_to}/{report_invoices}/{report_repairs}/{report_payment}', [ReportController::class, 'print_report'])->name('print-report')->middleware('notification')->middleware('locale');    
+Route::get('/print-report/{report_from}/{report_to}/{report_invoices}/{report_payment}', [ReportController::class, 'print_report'])->name('print-report')->middleware('notification')->middleware('locale');    
 Route::get('/print-register-report', [ReportController::class, 'print_register_report'])->name('print-register-report')->middleware('notification')->middleware('locale');   
 Route::post('/register-report/insert-data', [ReportController::class, 'register_report_insert'])->name('register-report-insert')->middleware('notification')->middleware('locale');    
 
@@ -158,7 +132,6 @@ Route::delete('/inventory/product/delete/{id}', [InventoryController::class, 'in
 /* BARCODE ROUTES */
 Route::post('/barcode', [BarcodeController::class, 'barcode'])->name('barcode')->middleware('verified')->middleware('notification')->middleware('locale');    
 Route::post('/barcode/invoice', [BarcodeController::class, 'invoice_barcode'])->name('invoice-barcode')->middleware('verified')->middleware('notification')->middleware('locale');    
-Route::post('/barcode/repair', [BarcodeController::class, 'repair_barcode'])->name('repair-barcode')->middleware('verified')->middleware('notification')->middleware('locale');
 
 /* APP ROUTES */
 Route::get('/app/session/set-sidebar-position/{position}', [AppController::class, 'set_sidebar_position'])->name('set-sidebar-position')->middleware('notification')->middleware('locale');   

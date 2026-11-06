@@ -3,7 +3,7 @@ services:
         build: .
         restart: always
         tty: true
-        container_name: ${SERVICE_NAME:-repair-business-app-development}
+        container_name: ${SERVICE_NAME:-mart-dev}
         ports:
             - "${SERVICE_PORT:-8000}:80"
         volumes:
@@ -20,7 +20,7 @@ services:
     client:
         image: node:20-alpine
         tty: true
-        container_name: ${CLIENT_NAME:-repair-business-client}
+        container_name: ${CLIENT_NAME:-mart-dev-client}
         working_dir: /app
         command: sh -c "npm install && exec npm run dev -- --host 0.0.0.0"
         ports:

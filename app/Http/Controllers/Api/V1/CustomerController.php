@@ -7,7 +7,6 @@ use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Log;
 use App\Models\Notification;
-use App\Models\Repair;
 use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -88,12 +87,6 @@ class CustomerController extends Controller
             return $this->error(Lang::get('repair-business.error_not-found'), 404);
         }
 
-        $repairs = Repair::with(['status_data', 'priority_data'])
-            ->where('customer', $id)
-            ->where('active', 'yes')
-            ->orderBy('created_at', 'DESC')
-            ->paginate(25);
-
         $invoices = Invoice::with('status_data')
             ->where('customer_id', $id)
             ->where('active', 'yes')
@@ -102,7 +95,6 @@ class CustomerController extends Controller
 
         return $this->success([
             'customer' => $customer,
-            'repairs' => $repairs,
             'invoices' => $invoices,
         ]);
     }

@@ -20,7 +20,6 @@ function today() {
 
 const MODULES = [
     { key: 'invoices', labelKey: 'nav.invoices' },
-    { key: 'repairs', labelKey: 'nav.repairs' },
     { key: 'payments', labelKey: 'nav.payments' },
 ];
 
@@ -30,7 +29,7 @@ export default function ReportsPage() {
     const { t } = useI18n();
     const [from, setFrom] = useState(today());
     const [to, setTo] = useState(today());
-    const [include, setInclude] = useState({ invoices: true, repairs: true, payments: true });
+    const [include, setInclude] = useState({ invoices: true, payments: true });
     const [result, setResult] = useState(null);
     const [loading, setLoading] = useState(false);
     const [printing, setPrinting] = useState(false);
@@ -49,7 +48,6 @@ export default function ReportsPage() {
                 from,
                 to,
                 invoices: include.invoices,
-                repairs: include.repairs,
                 payments: include.payments,
             });
             setResult(data.data);
@@ -68,7 +66,6 @@ export default function ReportsPage() {
                 from,
                 to,
                 invoices: include.invoices ? '1' : '0',
-                repairs: include.repairs ? '1' : '0',
                 payments: include.payments ? '1' : '0',
             });
             const { data } = await api.get(`/reports/print?${params}`, { responseType: 'blob' });
@@ -150,7 +147,6 @@ export default function ReportsPage() {
                     </div>
 
                     {showCard('invoices') && <InvoicesSection data={result.invoices} />}
-                    {showCard('repairs') && <RepairsSection data={result.repairs} />}
                     {showCard('payments') && <PaymentsSection data={result.payments} />}
                 </div>
             )}
@@ -246,92 +242,6 @@ function InvoicesSection({ data }) {
                                     <td className={`${td} text-right`}>
                                         <Link
                                             to={`/invoices/${invoice.id}`}
-                                            className="text-sm font-medium text-blue-700 hover:underline"
-                                        >
-                                            {t('common.view')}
-                                        </Link>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
-            </div>
-        </Card>
-    );
-}
-
-function RepairsSection({ data }) {
-    const { t } = useI18n();
-    return (
-        <Card className="overflow-hidden">
-            <div className="border-b border-slate-100 px-5 py-4">
-                <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-900">{t('nav.repairs')}</h3>
-                <div className="mt-2 text-sm text-slate-600">
-                    {t('reports.repairs_count', { count: data.count })}
-                </div>
-            </div>
-            <div className="overflow-x-auto">
-                <table className="w-full text-left">
-                    <thead>
-                        <tr className="border-b border-slate-100 bg-slate-50/60 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                            <th className={th}>{t('common.id')}</th>
-                            <th className={th}>{t('common.customer')}</th>
-                            <th className={th}>{t('repairs.target')}</th>
-                            <th className={th}>{t('repairs.request')}</th>
-                            <th className={th}>{t('common.status')}</th>
-                            <th className={th}>{t('repairs.priority')}</th>
-                            <th className={th}>{t('common.date')}</th>
-                            <th className={`${th} text-right`}>{t('common.actions')}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data.items.length === 0 ? (
-                            <tr>
-                                <td colSpan={8} className="px-6 py-12 text-center text-sm text-slate-400">
-                                    {t('reports.no_info')}
-                                </td>
-                            </tr>
-                        ) : (
-                            data.items.map((repair) => (
-                                <tr
-                                    key={repair.id}
-                                    className="border-b border-slate-100 transition-colors last:border-0 hover:bg-slate-50"
-                                >
-                                    <td className={td}>{repair.id}</td>
-                                    <td className={td}>
-                                        {repair.customer_data ? (
-                                            <>
-                                                <p className="m-0">
-                                                    {repair.customer_data.first_name} {repair.customer_data.last_name}
-                                                </p>
-                                                <p className="m-0 text-xs">{formatPhone(repair.customer_data.phone)}</p>
-                                                <p className="m-0 text-xs">{repair.customer_data.email}</p>
-                                            </>
-                                        ) : (
-                                            <span className="text-slate-400">—</span>
-                                        )}
-                                    </td>
-                                    <td className={td}>{repair.target}</td>
-                                    <td className={td}>{repair.request}</td>
-                                    <td className={td}>
-                                        {repair.status_data ? (
-                                            <Badge solid tone={statusTone(repair.status_data.color)}>
-                                                {repair.status_data.name}
-                                            </Badge>
-                                        ) : null}
-                                    </td>
-                                    <td className={td}>
-                                        {repair.priority_data ? (
-                                            <Badge solid tone={statusTone(repair.priority_data.color)}>
-                                                {repair.priority_data.name}
-                                            </Badge>
-                                        ) : null}
-                                    </td>
-                                    <td className={td}>{formatDate(repair.created_at)}</td>
-                                    <td className={`${td} text-right`}>
-                                        <Link
-                                            to={`/repairs/${repair.id}`}
                                             className="text-sm font-medium text-blue-700 hover:underline"
                                         >
                                             {t('common.view')}

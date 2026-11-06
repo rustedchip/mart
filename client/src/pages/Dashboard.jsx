@@ -9,7 +9,7 @@ import {
     XAxis,
     YAxis,
 } from 'recharts';
-import { CirclePlus, DollarSign, Receipt, Wrench } from 'lucide-react';
+import { DollarSign, FilePlus, Receipt } from 'lucide-react';
 import api from '../api/client';
 import { useI18n } from '../i18n/I18nContext';
 import { formatMoney, getApiError } from '../utils/format';
@@ -150,10 +150,10 @@ export default function Dashboard() {
                         {t('dashboard.subtitle')}
                     </p>
                 </div>
-                <Link to="/repairs/create">
+                <Link to="/invoices/create">
                     <Button>
-                        <CirclePlus className="h-4 w-4" />
-                        {t('dashboard.new_repair')}
+                        <FilePlus className="h-4 w-4" />
+                        {t('nav.create_invoice')}
                     </Button>
                 </Link>
             </div>
@@ -168,7 +168,7 @@ export default function Dashboard() {
                 </div>
             ) : (
                 <>
-                    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                         <StatCard
                             label={t('dashboard.earnings_today')}
                             value={formatMoney(stats.current_year_income.current_day)}
@@ -189,13 +189,6 @@ export default function Dashboard() {
                             prefix="$"
                             icon={DollarSign}
                             tone="emerald"
-                        />
-                        <StatCard
-                            label={t('dashboard.repairs_not_invoiced')}
-                            value={stats.repairs_no_invoice}
-                            icon={Wrench}
-                            tone="blue"
-                            to="/repairs?filter=no-invoice"
                         />
                         <StatCard
                             label={t('dashboard.unpaid_invoices')}

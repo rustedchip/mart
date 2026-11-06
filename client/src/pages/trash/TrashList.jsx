@@ -11,7 +11,6 @@ import { useConfirm } from '../../components/ui/ConfirmAlert';
 
 const ACTIONS = {
     customer: { restore: '/customers', destroy: '/customers' },
-    repair: { restore: '/repairs', destroy: '/repairs' },
     invoice: { restore: '/invoices', destroy: '/invoices' },
 };
 
@@ -21,23 +20,6 @@ function customerText(c) {
         c.phone ? `[${formatPhone(c.phone)}]` : '',
         c.email ? `[${c.email}]` : '',
     ]
-        .filter(Boolean)
-        .join(' ');
-}
-
-function repairText(r) {
-    const c = r.customer_data;
-    const customerPart = c
-        ? [
-              c.first_name,
-              c.last_name,
-              c.email,
-              c.phone ? formatPhone(c.phone) : null,
-          ]
-              .filter(Boolean)
-              .join(' ')
-        : '';
-    return [`[${r.target}]`, `[${r.request}]`, customerPart ? `[${customerPart}]` : '']
         .filter(Boolean)
         .join(' ');
 }
@@ -84,7 +66,6 @@ export default function TrashList() {
     const { t } = useI18n();
     const { confirm, confirmElement } = useConfirm();
     const [customers, setCustomers] = useState(null);
-    const [repairs, setRepairs] = useState(null);
     const [invoices, setInvoices] = useState(null);
     const [search, setSearch] = useState('');
     const [debounced, setDebounced] = useState('');
@@ -103,7 +84,6 @@ export default function TrashList() {
         api.get('/trash', { params: { search: debounced } })
             .then(({ data }) => {
                 setCustomers(data.data.customers);
-                setRepairs(data.data.repairs);
                 setInvoices(data.data.invoices);
                 setError('');
             })
@@ -120,7 +100,6 @@ export default function TrashList() {
         api.get('/trash', { params: { search: debounced } })
             .then(({ data }) => {
                 setCustomers(data.data.customers);
-                setRepairs(data.data.repairs);
                 setInvoices(data.data.invoices);
             })
             .catch((err) => setError(getApiError(err)));
@@ -152,7 +131,7 @@ export default function TrashList() {
     };
 
     const loaded = customers !== null;
-    const total = (customers?.length || 0) + (repairs?.length || 0) + (invoices?.length || 0);
+    const total = (customers?.length || 0) + (invoices?.length || 0);
 
     return (
         <div className="space-y-6">
@@ -209,26 +188,6 @@ export default function TrashList() {
                                             <ActionButtons
                                                 kind="customer"
                                                 id={c.id}
-                                                busy={busy}
-                                                onRestore={restore}
-                                                onDestroy={destroy}
-                                            />
-                                        </td>
-                                    </tr>
-                                ))}
-                                {repairs.map((r) => (
-                                    <tr
-                                        key={`r-${r.id}`}
-                                        className="border-b border-slate-100 transition-colors last:border-0 hover:bg-slate-50"
-                                    >
-                                        <td className="px-6 py-3 text-sm text-slate-500">{r.id}</td>
-                                        <td className="px-6 py-3 text-sm font-medium text-slate-700">{t('trash.repair')}</td>
-                                        <td className="px-6 py-3 text-sm text-slate-600">{repairText(r)}</td>
-                                        <td className="px-6 py-3 text-sm text-slate-500">{formatDateTime(r.updated_at)}</td>
-                                        <td className="px-6 py-3 text-right">
-                                            <ActionButtons
-                                                kind="repair"
-                                                id={r.id}
                                                 busy={busy}
                                                 onRestore={restore}
                                                 onDestroy={destroy}

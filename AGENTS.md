@@ -16,8 +16,8 @@ Rules for any agent (or developer) working on this project. Read before making c
 
 | Container               | Purpose                                | Reachable at            |
 |-------------------------|----------------------------------------|-------------------------|
-| `repair-business-app`   | Laravel 8 + Apache (API + React SPA)   | http://localhost:5050   |
-| `repair-business-client`| Vite dev server (React, dev-only)      | http://localhost:5173   |
+| `mart-dev`              | Laravel 8 + Apache (API + React SPA)   | http://localhost:5051   |
+| `mart-dev-client`       | Vite dev server (React, dev-only)      | http://localhost:5174   |
 | `mysql_development`     | MySQL 8.4                              | `mysql_development:3306`|
 | `phpmyadmin_development`| phpMyAdmin                             | http://localhost:9010   |
 
@@ -62,9 +62,9 @@ Run from the repo root unless noted.
 
 ### Laravel / artisan
 ```
-docker exec -w /var/www repair-business-app php artisan <cmd>
-docker exec -w /var/www repair-business-app php artisan migrate --seed
-docker exec -w /var/www repair-business-app php artisan route:list
+docker exec -w /var/www mart-dev php artisan <cmd>
+docker exec -w /var/www mart-dev php artisan migrate --seed
+docker exec -w /var/www mart-dev php artisan route:list
 ```
 
 ### Composer (no composer on host; uses throwaway image)
@@ -90,20 +90,20 @@ the image build context so secrets never get baked in.
 
 ### MySQL (inside the DB container)
 ```
-docker exec -it mysql_development mysql -u repair_business_database -p repair_business_database
-docker exec mysql_development mysqldump -u repair_business_database -p repair_business_database > backup.sql
+docker exec -it mysql_development mysql -u mart_database -p mart_database
+docker exec mysql_development mysqldump -u mart_database -p mart_database > backup.sql
 ```
 Credentials come from `.env` (never hardcode or commit them).
 
 ### Tests
 ```
-docker exec -w /var/www repair-business-app ./vendor/bin/phpunit
+docker exec -w /var/www mart-dev ./vendor/bin/phpunit
 ```
 
 ### Logs
 ```
-docker logs -f repair-business-app
-docker exec -w /var/www repair-business-app tail -f storage/logs/laravel.log
+docker logs -f mart-dev
+docker exec -w /var/www mart-dev tail -f storage/logs/laravel.log
 ```
 
 ## Required Workflow

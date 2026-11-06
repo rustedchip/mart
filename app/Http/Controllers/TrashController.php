@@ -8,7 +8,6 @@ use App;
 use App\Models\Customer;
 use App\Models\InvoiceSetting;
 use App\Models\Invoice;
-use App\Models\Repair;
 
 class TrashController extends Controller
 {
@@ -38,11 +37,6 @@ class TrashController extends Controller
 
         $customers = Customer::whereIn('id',$search_customer)->where('active','no')->orderBy('created_at','DESC')->get(); 
 
-        $search_repair = Repair::select('id')->where('target', 'LIKE', '%' . $request->search . '%')
-        ->orwhere('request', 'LIKE', '%' . $request->search . '%')->orwhereIn('customer',$search_customer);
-        
-        $repairs = Repair::whereIn('id',$search_repair)->where('active','no')->orderBy('created_at','DESC')->get();
-        
         $search_priority = InvoiceSetting::select('id')->where('name', 'LIKE', '%' . $request->search . '%');
         $search_invoices = Invoice::select('id')->where('customer_name', 'LIKE', '%' . $request->search . '%')
         ->orwhere('customer_email', 'LIKE', '%' . $request->search . '%')
@@ -51,8 +45,6 @@ class TrashController extends Controller
         ->orwherein('status',$search_priority);
         $invoices = Invoice::whereIn('id',$search_invoices)->where('active','no')->orderBy('created_at','DESC')->get(); 
 
- 
-
-        return view('trash.index-trash',compact('customers','repairs','invoices'))->with('search',$request->search);
+        return view('trash.index-trash',compact('customers','invoices'))->with('search',$request->search);
     }
 }

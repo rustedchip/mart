@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Save, Trash2, Wrench } from 'lucide-react';
+import { FilePlus, Save, Trash2 } from 'lucide-react';
 import api from '../../api/client';
 import { useI18n } from '../../i18n/I18nContext';
 import { formatDate, formatMoney, formatPhone, getApiError } from '../../utils/format';
@@ -106,7 +106,7 @@ export default function CustomerView() {
         return <div className="py-12 text-center text-sm text-slate-400">{t('common.loading')}</div>;
     }
 
-    const { customer, repairs, invoices } = data;
+    const { customer, invoices } = data;
 
     return (
         <div className="space-y-6">
@@ -129,12 +129,12 @@ export default function CustomerView() {
                     </p>
                 </div>
                 <Link
-                    to={`/repairs/create?customer=${customer.id}`}
+                    to="/invoices/create"
                     className="shrink-0"
                 >
                     <Button>
-                        <Wrench className="h-4 w-4" />
-                        {t('repairs.new')}
+                        <FilePlus className="h-4 w-4" />
+                        {t('invoices.new')}
                     </Button>
                 </Link>
             </div>
@@ -198,72 +198,6 @@ export default function CustomerView() {
                     </Card>
                 </div>
             </div>
-
-            <section>
-                <h2 className="mb-3 text-lg font-semibold text-slate-900">{t('customers.view.repairs')}</h2>
-                <Card className="overflow-hidden">
-                    {repairs.data.length > 0 ? (
-                        <>
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-left">
-                                    <thead>
-                                        <tr className="border-b border-slate-100 bg-slate-50/60 text-xs font-semibold uppercase tracking-wide text-slate-500">
-                                            <th className="px-6 py-3">{t('common.id')}</th>
-                                            <th className="px-6 py-3">{t('repairs.target')}</th>
-                                            <th className="px-6 py-3">{t('repairs.request')}</th>
-                                            <th className="px-6 py-3">{t('common.status')}</th>
-                                            <th className="px-6 py-3">{t('repairs.priority')}</th>
-                                            <th className="px-6 py-3">{t('common.date')}</th>
-                                            <th className="px-6 py-3 text-right">{t('common.actions')}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {repairs.data.map((repair) => (
-                                            <tr
-                                                key={repair.id}
-                                                className="border-b border-slate-100 last:border-0 hover:bg-slate-50"
-                                            >
-                                                <td className="px-6 py-3 text-sm text-slate-700">{repair.id}</td>
-                                                <td className="px-6 py-3 text-sm text-slate-700">{repair.target}</td>
-                                                <td className="max-w-xs truncate px-6 py-3 text-sm text-slate-600">
-                                                    {repair.request}
-                                                </td>
-                                                <td className="px-6 py-3">
-                                                    {repair.status_data && (
-                                                        <Badge solid tone={toneFor(repair.status_data.color)}>
-                                                            {repair.status_data.name}
-                                                        </Badge>
-                                                    )}
-                                                </td>
-                                                <td className="px-6 py-3">
-                                                    {repair.priority_data && (
-                                                        <Badge solid tone={toneFor(repair.priority_data.color)}>
-                                                            {repair.priority_data.name}
-                                                        </Badge>
-                                                    )}
-                                                </td>
-                                                <td className="px-6 py-3 text-sm text-slate-600">
-                                                    {formatDate(repair.created_at)}
-                                                </td>
-                                                <td className="px-6 py-3 text-right">
-                                                    <Link
-                                                        to={`/repairs/${repair.id}`}
-                                                        className="text-sm font-medium text-blue-700 hover:underline"
-                                                    >
-                                                        {t('common.view')}
-                                                    </Link>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </>
-                    ) : (
-                        <EmptyTable />
-                    )}
-                </Card>
-            </section>
 
             <section>
                 <h2 className="mb-3 text-lg font-semibold text-slate-900">{t('customers.view.invoices')}</h2>

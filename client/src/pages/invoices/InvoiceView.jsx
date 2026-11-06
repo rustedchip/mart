@@ -13,7 +13,6 @@ import {
     ScanLine,
     Trash2,
     UserRound,
-    Wrench,
     X,
 } from 'lucide-react';
 import api from '../../api/client';
@@ -173,14 +172,6 @@ function ItemRow({ invoiceId, item, onChanged, notify, confirm }) {
         <tr className="group border-b border-slate-100 last:border-0">
             <td className="px-6 py-3">
                 <p className="text-sm font-medium text-slate-800">{item.name}</p>
-                {item.group === 'repair' && item.ref && (
-                    <Link
-                        to={`/repairs/${item.ref}`}
-                        className="text-xs font-medium text-blue-700 hover:underline"
-                    >
-                        {t('invoices.repair_number', { id: item.ref })}
-                    </Link>
-                )}
             </td>
             <td className="max-w-[280px] px-6 py-3">
                 <p className="text-sm text-slate-600 line-clamp-2">{item.description}</p>
@@ -563,108 +554,6 @@ function NewItemForm({ invoiceId, onChanged, notify, onDone }) {
     );
 }
 
-function RepairPicker({ open, onClose, onSelect }) {
-    const { t } = useI18n();
-    const [repairs, setRepairs] = useState([]);
-    const [search, setSearch] = useState('');
-    const [debounced, setDebounced] = useState('');
-    const [loading, setLoading] = useState(false);
-    const timer = React.useRef(null);
-
-    useEffect(() => {
-        if (!open) {
-            setSearch('');
-            setDebounced('');
-            return;
-        }
-    }, [open]);
-
-    useEffect(() => {
-        clearTimeout(timer.current);
-        timer.current = setTimeout(() => setDebounced(search), 300);
-        return () => clearTimeout(timer.current);
-    }, [search]);
-
-    useEffect(() => {
-        if (!open) return;
-        setLoading(true);
-        api.get('/repairs', { params: { search: debounced } })
-            .then(({ data }) => setRepairs(data.data.repairs.data))
-            .catch(() => setRepairs([]))
-            .finally(() => setLoading(false));
-    }, [open, debounced]);
-
-    if (!open) return null;
-
-    return (
-        <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4"
-            onClick={onClose}
-        >
-            <div
-                className="flex max-h-[80vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-white shadow-xl"
-                onClick={(e) => e.stopPropagation()}
-            >
-                <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-                    <h3 className="text-sm font-semibold text-slate-900">{t('picker.select_repair')}</h3>
-                    <button type="button" onClick={onClose} className={iconButton} aria-label="Close">
-                        <X className="h-4 w-4" />
-                    </button>
-                </div>
-
-                <div className="border-b border-slate-100 px-5 py-3">
-                    <Input
-                        type="search"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        placeholder={t('picker.search_repair')}
-                        autoFocus
-                    />
-                </div>
-
-                <div className="flex-1 overflow-y-auto">
-                    {loading ? (
-                        <div className="px-5 py-10 text-center text-sm text-slate-400">{t('common.loading')}</div>
-                    ) : repairs.length === 0 ? (
-                        <div className="px-5 py-10 text-center text-sm text-slate-400">
-                            {t('common.nothing_found')}
-                        </div>
-                    ) : (
-                        repairs.map((repair) => (
-                            <button
-                                key={repair.id}
-                                type="button"
-                                onClick={() => onSelect(repair)}
-                                className="flex w-full items-center justify-between gap-3 border-b border-slate-50 px-5 py-3 text-left transition-colors hover:bg-blue-50/60"
-                            >
-                                <span className="min-w-0">
-                                    <span className="block truncate text-sm font-medium text-slate-800">
-                                        #{repair.id} · {repair.target}
-                                    </span>
-                                    <span className="block truncate text-xs text-slate-500">
-                                        {repair.customer_data
-                                            ? `${repair.customer_data.first_name} ${repair.customer_data.last_name || ''}`
-                                            : ''}
-                                    </span>
-                                </span>
-                                <span className="shrink-0 text-xs text-slate-500">
-                                    {repair.estimate != null ? `$ ${formatMoney(repair.estimate)}` : '—'}
-                                </span>
-                            </button>
-                        ))
-                    )}
-                </div>
-
-                <div className="flex justify-end border-t border-slate-100 px-5 py-3">
-                    <Button type="button" variant="secondary" className="w-full" onClick={onClose}>
-                        {t('common.cancel')}
-                    </Button>
-                </div>
-            </div>
-        </div>
-    );
-}
-
 export default function InvoiceView() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -682,7 +571,6 @@ export default function InvoiceView() {
     const [messageTone, setMessageTone] = useState('success');
     const [pickerOpen, setPickerOpen] = useState(false);
     const [partsOpen, setPartsOpen] = useState(false);
-    const [repairsOpen, setRepairsOpen] = useState(false);
     const [payOpen, setPayOpen] = useState(false);
     const [payForm, setPayForm] = useState({ amount: '', method: 'cash', ref: '' });
     const [payErrors, setPayErrors] = useState({});
@@ -774,17 +662,6 @@ export default function InvoiceView() {
         setPickerOpen(false);
         try {
             const { data } = await api.put(`/invoices/${id}/update-customer/${customer.id}`);
-            notify(data.message);
-            load();
-        } catch (err) {
-            notify(getApiError(err), 'error');
-        }
-    };
-
-    const handleAddRepair = async (repair) => {
-        setRepairsOpen(false);
-        try {
-            const { data } = await api.post(`/invoices/items/create-repair/${repair.id}/${id}`);
             notify(data.message);
             load();
         } catch (err) {
@@ -949,7 +826,7 @@ export default function InvoiceView() {
         return <div className="py-12 text-center text-sm text-slate-400">{t('common.loading')}</div>;
     }
 
-    const { invoice, items, transactions, payments, repairs, logs, statuses } = data;
+    const { invoice, items, transactions, payments, logs, statuses } = data;
 
     const balanceTone =
         invoice.balance < 0 ? 'text-emerald-600' : invoice.balance > 0 ? 'text-red-600' : 'text-slate-700';
@@ -1123,7 +1000,7 @@ export default function InvoiceView() {
                                         className="inline-flex items-center gap-1 text-xs font-medium text-blue-700 hover:underline"
                                     >
                                         <UserRound className="h-3.5 w-3.5" />
-                                        {invoice.customer_id ? t('repairs.reassign') : t('repairs.assign')}
+                                        {invoice.customer_id ? (t('customers.reassign') || 'Reassign') : (t('customers.assign') || 'Assign')}
                                     </button>
                                 )}
                             </div>
@@ -1191,15 +1068,6 @@ export default function InvoiceView() {
                         >
                             <Plus className="h-3.5 w-3.5" />
                             {t('invoices.add_item')}
-                        </Button>
-                        <Button
-                            type="button"
-                            variant="secondary"
-                            size="sm"
-                            onClick={() => setRepairsOpen(true)}
-                        >
-                            <Wrench className="h-3.5 w-3.5" />
-                            {t('invoices.add_repair')}
                         </Button>
                         <Button
                             type="button"
@@ -1461,23 +1329,6 @@ export default function InvoiceView() {
                             )}
                         </dl>
                     </div>
-
-                {repairs.length > 0 && (
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-slate-100 px-6 py-3">
-                        <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                            {t('invoices.linked_repairs')}
-                        </span>
-                        {repairs.map((repair) => (
-                            <Link
-                                key={repair.id}
-                                to={`/repairs/${repair.id}`}
-                                className="text-xs font-medium text-blue-700 hover:underline"
-                            >
-                                #{repair.id} {repair.target}
-                            </Link>
-                        ))}
-                    </div>
-                )}
             </Card>
 
             <Card className="overflow-hidden">
@@ -1487,7 +1338,7 @@ export default function InvoiceView() {
                     className="flex w-full items-center justify-between px-6 py-3 text-left transition-colors hover:bg-slate-50"
                 >
                     <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                        {t('repairs.activity_log')}
+                        {t('nav.activity_log') || 'Activity Log'}
                         <span className="ml-1.5 font-normal normal-case text-slate-400">({logs.total})</span>
                     </span>
                     <ChevronDown
@@ -1502,22 +1353,18 @@ export default function InvoiceView() {
                             <ul className="divide-y divide-slate-100 border-t border-slate-100">
                                 {logs.data.map((log) => (
                                     <li key={log.id} className="px-6 py-2">
-                                        <p className="text-xs leading-relaxed text-slate-600">{log.data}</p>
-                                        <p className="mt-0.5 text-[10px] text-slate-400">
-                                            {log.user_data ? log.user_data.name : '—'} &middot;{' '}
-                                            {formatDate(log.created_at)}
-                                        </p>
+                                        <div className="flex items-center justify-between text-xs text-slate-500">
+                                            <span>{log.user_data?.name || 'System'}</span>
+                                            <span>{formatDateTime(log.created_at)}</span>
+                                        </div>
+                                        <p className="mt-0.5 text-xs text-slate-700">{log.data}</p>
                                     </li>
                                 ))}
                             </ul>
                             {logs.last_page > 1 && (
-                                <Pagination
-                                    paginator={logs}
-                                    onChangePage={(page) => {
-                                        setLogsPage(page);
-                                        load(page);
-                                    }}
-                                />
+                                <div className="border-t border-slate-100 px-6 py-3">
+                                    <Pagination paginator={logs} onChangePage={(p) => setLogsPage(p)} />
+                                </div>
                             )}
                         </>
                     ))}
@@ -1534,7 +1381,6 @@ export default function InvoiceView() {
                 onClose={() => setPickerOpen(false)}
                 onSelect={handleAssignCustomer}
             />
-            <RepairPicker open={repairsOpen} onClose={() => setRepairsOpen(false)} onSelect={handleAddRepair} />
         </div>
     );
 }

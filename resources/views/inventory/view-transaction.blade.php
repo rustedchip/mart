@@ -30,16 +30,6 @@
                         </div>
                     </div>
                     <div class="form-group row m-0">
-                        <label class="col-sm-4 col-form-label">{{ __('repair-business.input_repair') }}</label>
-                        <div class="col-sm-8">
-                            @if (isset($transaction->repair_id))
-                                <a href="{{ route('view-repair', $transaction->repair_id) }}"
-                                    class="btn btn-link btn-block border btn-sm text-left">
-                                    {{ $transaction->repair_id }}</a>
-                            @endif
-                        </div>
-                    </div>
-                    <div class="form-group row m-0">
                         <label for="transaction" class="col-sm-4 col-form-label">{{ __('repair-business.input_transaction') }}</label>
                         <div class="col-sm-8">
                             <select class="form-control form-control-sm @error('transaction') is-invalid @enderror"

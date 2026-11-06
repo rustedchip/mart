@@ -12,7 +12,6 @@ use App\Models\InvoiceItem;
 use App\Models\Invoice;
 use App\Models\Log;
 use App\Models\Payment;
-use App\Models\Repair;
 
 class BarcodeController extends Controller
 {
@@ -90,64 +89,6 @@ class BarcodeController extends Controller
 
     }
 
-    public function repair_barcode(request $request)
-    {
-  
-        $repair = Repair::where('id',$request->repair)->first(); 
-        $product = InventoryProduct::where('barcode',$request->barcode)->first();
-
-
-        if($product){
-
-            $purchases = InventoryTransaction::where('product_id',$product->id)->where('transaction','purchase')->sum('quantity');
-            $sells = InventoryTransaction::where('product_id',$product->id)->where('transaction','sell')->sum('quantity');
-            $stock = $purchases - $sells;
-
-            if($stock > 0 ){
-
-                /* SELL TRANSACTION */
-                
-                $check_transaction = InventoryTransaction::where('product_id',$product->id)->where('repair_id',$repair->id)->first();
-        
-                if($check_transaction){
-                    $inventory_transaction = $check_transaction;
-                    $inventory_transaction->quantity = $inventory_transaction ->quantity + 1;
-                    $inventory_transaction->save();
-                }else{
-                    $inventory_transaction = new InventoryTransaction();
-                    $inventory_transaction->product_id = $product->id;
-                    $inventory_transaction->repair_id = $repair->id;
-                    $inventory_transaction->transaction = 'sell';
-                    $inventory_transaction->selling_price = $product->selling_price;
-                    $inventory_transaction->quantity = 1;
-                    $inventory_transaction->save();
-                }
-        
-                $log = new Log; 
-                $log->table = 'inventory_transactions';
-                $log->data = 'Inventory Transaction has been Created';
-                $log->ref = $inventory_transaction->id;
-                $log->user = Auth::user()->id;
-                $log->save();
-
-                $response = 'new-transaction-created';
-        
-                
-                /* SELL TRANSACTION */
-
-            }else{
-                $response = 'part-out-stock';
-            }
-
-        }else{
-            $response = 'barcode-not-found';
-        }
-
-        return compact('response');
-
-    }
-
-
     public function barcode(request $request)
     {
         $barcode = $request->barcode;
@@ -173,19 +114,6 @@ class BarcodeController extends Controller
                     $data = $invoice;
                     $data_response = null;
                     $response = 'invoice-found';
-                }else{
-                    $data_response = $barcode;
-                    $response = 'barcode-not-found';
-                    $data = null;
-                }
-            }elseif(str_starts_with($barcode, 'REP')){
-                $repair_id = str_replace('REP', '', $barcode);
-                $repair = Repair::where('id',$repair_id)->first();
-
-                if($repair){
-                    $data = $repair;
-                    $response = 'repair-found';
-                    $data_response = null;
                 }else{
                     $data_response = $barcode;
                     $response = 'barcode-not-found';

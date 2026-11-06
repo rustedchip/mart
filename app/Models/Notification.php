@@ -63,13 +63,4 @@ class Notification extends Model
             static::clearFor('view-invoice', $invoice->id);
         }
     }
-
-    public static function newRepair(Repair $repair)
-    {
-        static::createIfMissing(
-            'view-repair',
-            $repair->id,
-            Lang::get('repair-business.notification.new-repair', ['id' => $repair->id])
-        );
-    }
 }

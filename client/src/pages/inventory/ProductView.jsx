@@ -106,11 +106,9 @@ export default function ProductView() {
             cancelLabel: t('common.cancel'),
         });
         if (!ok) return;
-        const task = transaction.repair_id ? 'repair' : transaction.invoice_id ? 'invoice' : null;
         try {
-            if (task && (transaction.repair_id || transaction.invoice_id)) {
-                const target = task === 'repair' ? transaction.repair_id : transaction.invoice_id;
-                await api.delete(`/inventory/${task}/${target}/transactions/${transaction.id}`);
+            if (transaction.invoice_id) {
+                await api.delete(`/inventory/invoice/${transaction.invoice_id}/transactions/${transaction.id}`);
             } else {
                 await api.delete(`/inventory/transactions/${transaction.id}`);
             }
@@ -303,11 +301,9 @@ export default function ProductView() {
                                                               : '—'}
                                                     </td>
                                                     <td className="px-6 py-3 text-sm text-slate-600">
-                                                        {tx.repair_id
-                                                            ? t('inventory.repair_source', { id: tx.repair_id })
-                                                            : tx.invoice_id
-                                                              ? t('inventory.invoice_source', { id: tx.invoice_id })
-                                                              : '—'}
+                                                        {tx.invoice_id
+                                                            ? t('inventory.invoice_source', { id: tx.invoice_id })
+                                                            : '—'}
                                                     </td>
                                                     <td className="px-6 py-3 text-sm text-slate-600">
                                                         {formatDate(tx.created_at)}

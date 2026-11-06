@@ -54,7 +54,7 @@
 
         <div class="row">
             <div class="col">
-                @if (!$customers->isEmpty() or !$repairs->isEmpty() or !$invoices->isEmpty())
+                @if (!$customers->isEmpty() or !$invoices->isEmpty())
                     <div class="table-responsive">
 
                         <table class="table table-sm mt-3 table-hover ">
@@ -91,51 +91,6 @@
                                             </td>
                                             <td>
                                                 <form action="{{ route('destroy-customer', $customer) }}" method="POST">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit"
-                                                        class="btn btn-block btn-danger mt-1 mb-2 btn-sm"><i
-                                                            class="fas fa-trash"></i> {{ __('repair-business.button_destroy') }}</button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                @endif
-
-                                @if (!$repairs->isEmpty())
-                                    @foreach ($repairs as $repair)
-                                        <tr>
-                                            <td>{{ $repair->id }}</td>
-                                            <td>{{ __('repair-business.table_repair') }}</td>
-                                            <td>
-                                                [{{ $repair->target }}]
-                                                [{{ $repair->request }}]
-
-                                                [ @if (isset($repair->customer_data->first_name))
-                                                    {{ $repair->customer_data->first_name }}
-                                                @endif
-                                                @if (isset($repair->customer_data->last_name))
-                                                    {{ $repair->customer_data->last_name }}
-                                                @endif
-                                                @if (isset($repair->customer_data->email))
-                                                    {{ $repair->customer_data->email }}
-                                                @endif
-                                                @if (isset($repair->customer_data->phone))
-                                                    {{ preg_replace("/^(\d{3})(\d{3})(\d{4})$/", "$1-$2-$3", $repair->customer_data->phone) }}
-                                                @endif ]
-                                            </td>
-                                            <td>{{ $repair->updated_at }}</td>
-                                            <td>
-                                                <form action="{{ route('restore-repair', $repair) }}" method="POST">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    <button type="submit"
-                                                        class="btn btn-block btn-primary mt-1 mb-2 btn-sm"><i
-                                                            class="fas fa-trash-restore"></i> {{ __('repair-business.button_restore') }}</button>
-                                                </form>
-                                            </td>
-                                            <td>
-                                                <form action="{{ route('destroy-repair', $repair) }}" method="POST">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit"

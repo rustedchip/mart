@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use App\Models\Log;
 use App\Models\Payment;
-use App\Models\Repair;
 use App\Models\Setting;
 use App\Traits\ApiResponses;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -37,20 +36,6 @@ class ReportController extends Controller
             ->get();
 
         return $data;
-    }
-
-    protected function repairReport($from, $to)
-    {
-        $repairs = Repair::with(['customer_data', 'status_data', 'priority_data'])
-            ->where('active', 'yes')
-            ->whereDate('created_at', '>=', $from)
-            ->whereDate('created_at', '<=', $to)
-            ->get();
-
-        return [
-            'count' => $repairs->count(),
-            'items' => $repairs,
-        ];
     }
 
     protected function paymentReport($from, $to)
@@ -100,12 +85,10 @@ class ReportController extends Controller
             'from' => 'required|date',
             'to' => 'required|date',
             'invoices' => 'boolean',
-            'repairs' => 'boolean',
             'payments' => 'boolean',
         ]);
 
         $withInvoices = $request->boolean('invoices');
-        $withRepairs = $request->boolean('repairs');
         $withPayments = $request->boolean('payments');
 
         return $this->success([
@@ -113,11 +96,9 @@ class ReportController extends Controller
                 'from' => $data['from'],
                 'to' => $data['to'],
                 'invoices' => $withInvoices,
-                'repairs' => $withRepairs,
                 'payments' => $withPayments,
             ],
             'invoices' => $withInvoices ? $this->invoiceReport($data['from'], $data['to']) : null,
-            'repairs' => $withRepairs ? $this->repairReport($data['from'], $data['to']) : null,
             'payments' => $withPayments ? $this->paymentReport($data['from'], $data['to']) : null,
         ]);
     }
@@ -128,28 +109,23 @@ class ReportController extends Controller
             'from' => 'required|date',
             'to' => 'required|date',
             'invoices' => 'boolean',
-            'repairs' => 'boolean',
             'payments' => 'boolean',
         ]);
 
         $invoices = $request->boolean('invoices');
-        $repairs = $request->boolean('repairs');
         $payments = $request->boolean('payments');
 
         $report_data = [
             'from' => $data['from'],
             'to' => $data['to'],
             'invoices' => $invoices ? 'on' : 'off',
-            'repairs' => $repairs ? 'on' : 'off',
             'payments' => $payments ? 'on' : 'off',
         ];
 
         $invoice_data = $this->invoiceReport($data['from'], $data['to']);
-        $repair_data = $this->repairReport($data['from'], $data['to']);
         $payment_data = $this->paymentReport($data['from'], $data['to']);
 
         $invoices = $invoice_data['items'];
-        $repairs = $repair_data['items'];
         $payments = $payment_data['items'];
 
         $profile = (object)[];
@@ -160,10 +136,8 @@ class ReportController extends Controller
         $pdf = Pdf::loadView('report.print-report', compact(
             'report_data',
             'invoice_data',
-            'repair_data',
             'payment_data',
             'invoices',
-            'repairs',
             'payments',
             'profile'
         ))->setOptions(['defaultFont' => 'sans-serif'])->setPaper('letter', 'portrait');

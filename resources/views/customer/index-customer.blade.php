@@ -79,17 +79,6 @@
                                                 href="{{ route('view-customer', $customer) }}"><i
                                                     class="fas fa-binoculars"></i> {{ __('repair-business.button_view') }}</a>
                                             @if (isset($task))
-                                                @if ($task == 'repair')
-                                                    <form class="mt-1" method="POST"
-                                                        action="{{ route('update-customer-repair', [$customer, $id]) }}">
-                                                        @csrf
-                                                        @method('PUT')
-
-                                                        <button type="submit" class="btn btn-primary btn-sm"><i
-                                                                class="fas fa-plus"></i>{{ __('repair-business.button_add-to-repair') }}</a>
-                                                    </form>
-                                                @endif
-
                                                 @if ($task == 'invoice')
                                                     <form class="mt-1" method="POST"
                                                         action="{{ route('update-customer-invoice', [$customer, $id]) }}">

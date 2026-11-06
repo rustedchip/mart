@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Wrench, Receipt, ShieldCheck } from 'lucide-react';
+import { Boxes, Receipt, ShieldCheck } from 'lucide-react';
 import Logo from '../components/ui/Logo';
 import { useI18n } from '../i18n/I18nContext';
 import { useAuth } from '../auth/AuthContext';
@@ -27,7 +27,7 @@ export default function AuthLayout({ title, subtitle, children, hideLoginLink = 
                     </div>
                     <ul className="space-y-4 text-sm text-slate-300">
                         <li className="flex items-center gap-3">
-                            <Wrench className="h-4.5 w-4.5 text-blue-400" /> {t('auth.feature_repairs')}
+                            <Boxes className="h-4.5 w-4.5 text-blue-400" /> {t('auth.feature_inventory')}
                         </li>
                         <li className="flex items-center gap-3">
                             <Receipt className="h-4.5 w-4.5 text-blue-400" /> {t('auth.feature_invoicing')}

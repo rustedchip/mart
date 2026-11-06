@@ -19,11 +19,6 @@
                 } else {
                     $report_invoices = 'off';
                 }
-                if (isset($report_data['repairs'])) {
-                    $report_repairs = $report_data['repairs'];
-                } else {
-                    $report_repairs = 'off';
-                }
                 if (isset($report_data['payments'])) {
                     $report_payments = $report_data['payments'];
                 } else {
@@ -31,9 +26,9 @@
                 }
 
             @endphp
-            <a href="{{ route('print-report', [$report_from, $report_to, $report_invoices, $report_repairs, $report_payments]) }}"
+            <a href="{{ route('print-report', [$report_from, $report_to, $report_invoices, $report_payments]) }}"
                 class="btn btn-primary btn-sm mb-1" target="popup"
-                onclick="window.open('{{ route('print-report', [$report_from, $report_to, $report_invoices, $report_repairs, $report_payments]) }}','popup','width=600,height=600'); return false;">
+                onclick="window.open('{{ route('print-report', [$report_from, $report_to, $report_invoices, $report_payments]) }}','popup','width=600,height=600'); return false;">
 
                 <i class="fas fa-print"></i> {{ __('repair-business.button_print') }}
             </a>
@@ -132,93 +127,6 @@
             </div>
         @endif
 
-        @if (!empty($repairs))
-            <h3 class="text-uppercase">{{ __('repair-business.repairs') }}</h3>
-            <div class="row">
-                <div class="col-md text-left"> {{ __('repair-business.repairs') }}: {{ $repair_data['count'] }}</div>
-                <div class="col-md text-center"></div>
-                <div class="col-md text-right"></div>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-sm mt-3 table-hover ">
-                    <thead>
-                        <tr>
-                            <th scope="col">
-                                <p class="m-0 p-0 small">{{ __('repair-business.table_id') }}</p>
-                            </th>
-                            <th scope="col">
-                                <p class="m-0 p-0 small">{{ __('repair-business.table_customer') }}</p>
-                            </th>
-                            <th scope="col">
-                                <p class="m-0 p-0 small">{{ __('repair-business.table_target') }}</p>
-                            </th>
-                            <th scope="col">
-                                <p class="m-0 p-0 small">{{ __('repair-business.table_request') }}</p>
-                            </th>
-                            <th scope="col">
-                                <p class="m-0 p-0 small">{{ __('repair-business.table_status') }}</p>
-                            </th>
-                            <th scope="col">
-                                <p class="m-0 p-0 small">{{ __('repair-business.table_priority') }}</p>
-                            </th>
-                            <th scope="col">
-                                <p class="m-0 p-0 small">{{ __('repair-business.table_date') }}</p>
-                            </th>
-                            <th scope="col"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                        @foreach ($repairs as $repair)
-                            <tr>
-                                <td>
-                                    <p class="m-0 p-0 small">{{ $repair->id }}</p>
-                                </td>
-                                <td>
-                                    @if (isset($repair->customer))
-                                        <p class="m-0 p-0 small">{{ $repair->customer_data->first_name }}
-                                            {{ $repair->customer_data->last_name }}</p>
-                                        <p class="m-0 p-0 small">
-                                            {{ preg_replace("/^(\d{3})(\d{3})(\d{4})$/", "$1-$2-$3", $repair->customer_data->phone) }}
-                                        </p>
-                                        <p class="m-0 p-0 small">{{ $repair->customer_data->email }}</p>
-                                    @endif
-                                </td>
-                                <td>
-                                    <p class="m-0 p-0 small">{{ $repair->target }}</p>
-                                </td>
-                                <td>
-                                    <p class="m-0 p-0 small">{{ $repair->request }}</p>
-                                </td>
-                                <td>
-                                    @if (isset($repair->status))
-                                        <p
-                                            class="font-weight-bold text-uppercase small m-0 p-0 text-{{ $repair->status_data->color ?? '' }}">
-                                            {{ $repair->status_data->name ?? '' }} </p>
-                                    @endif
-                                </td>
-                                <td>
-                                    @if (isset($repair->priority))
-                                        <p
-                                            class="font-weight-bold text-uppercase small m-0 p-0 text-{{ $repair->priority_data->color ?? '' }}">
-                                            {{ $repair->priority_data->name ?? '' }} </p>
-                                    @endif
-                                </td>
-                                <td>
-                                    <p class="m-0 p-0 small">{{ date_format($repair->created_at, 'M d, Y') }}</p>
-                                </td>
-                                <td class="text-right">
-                                    <a class="btn btn-primary small btn-sm" href="{{ route('view-repair', $repair) }}"><i
-                                            class="fas fa-binoculars"></i> {{ __('repair-business.button_view') }}</a>
-                                </td>
-                            </tr>
-                        @endforeach
-
-                    </tbody>
-                </table>
-
-            </div>
-        @endif
         @if (!empty($payments))
             <h3 class="text-uppercase">{{ __('repair-business.payments') }}</h3>
 

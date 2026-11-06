@@ -33,14 +33,6 @@
                         </div>
                         <div class="col-md">
                             <div class="form-check m-3">
-                                <input class="form-check-input" type="checkbox" id="repairs" name="repairs" checked>
-                                <label class="form-check-label" for="repairs">
-                                  {{ __('repair-business.input_repairs') }}
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-md">
-                            <div class="form-check m-3">
                                 <input class="form-check-input" type="checkbox" id="payments" name="payments" checked>
                                 <label class="form-check-label" for="payments">
                                   {{ __('repair-business.input_payments') }}

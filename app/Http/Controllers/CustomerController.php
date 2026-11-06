@@ -10,7 +10,6 @@ use \Illuminate\Support\Facades\Lang;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Log;
-use App\Models\Repair;
 
 class CustomerController extends Controller
 {
@@ -82,11 +81,9 @@ class CustomerController extends Controller
     public function view_customer($id)
     {
         $customer = Customer::findOrFail($id);
-        $repairs = Repair::where('customer',$id)->where('active','yes')->orderBy('created_at','DESC')->paginate(25); 
         $invoices = Invoice::where('customer_id',$id)->where('active','yes')->orderBy('created_at','DESC')->paginate(25); 
 
-
-        return view('customer.view-customer',compact('customer','repairs','invoices'));
+        return view('customer.view-customer',compact('customer','invoices'));
     }
 
     public function update_customer(request $request, $id)

@@ -32,64 +32,6 @@ class DatabaseSeeder extends Seeder
             'updated_at' => date("Y-m-d H:i:s"),
         ]);
 
-        DB::table('repair_settings')->insert([
-            'name' => 'RECEIVED',
-            'group' => 'status',
-            'color' => 'secondary',
-            'created_at' => date("Y-m-d H:i:s"),
-            'updated_at' => date("Y-m-d H:i:s"),
-        ]);
-
-        DB::table('repair_settings')->insert([
-            'name' => 'IN-PROGRESS',
-            'group' => 'warning',
-            'color' => 'secondary',
-            'created_at' => date("Y-m-d H:i:s"),
-            'updated_at' => date("Y-m-d H:i:s"),
-        ]);
-        DB::table('repair_settings')->insert([
-            'name' => 'FINISHED',
-            'group' => 'status',
-            'color' => 'primary',
-            'created_at' => date("Y-m-d H:i:s"),
-            'updated_at' => date("Y-m-d H:i:s"),
-        ]);
-        DB::table('repair_settings')->insert([
-            'name' => 'DELIVERED',
-            'group' => 'status',
-            'color' => 'success',
-            'created_at' => date("Y-m-d H:i:s"),
-            'updated_at' => date("Y-m-d H:i:s"),
-        ]);
-        DB::table('repair_settings')->insert([
-            'name' => 'CANCELED',
-            'group' => 'status',
-            'color' => 'danger',
-            'created_at' => date("Y-m-d H:i:s"),
-            'updated_at' => date("Y-m-d H:i:s"),
-        ]);
-        DB::table('repair_settings')->insert([
-            'name' => 'LOW',
-            'group' => 'priority',
-            'color' => 'secondary',
-            'created_at' => date("Y-m-d H:i:s"),
-            'updated_at' => date("Y-m-d H:i:s"),
-        ]);
-        DB::table('repair_settings')->insert([
-            'name' => 'NORMAL',
-            'group' => 'priority',
-            'color' => 'primary',
-            'created_at' => date("Y-m-d H:i:s"),
-            'updated_at' => date("Y-m-d H:i:s"),
-        ]);
-        DB::table('repair_settings')->insert([
-            'name' => 'URGENT',
-            'group' => 'priority',
-            'color' => 'danger',
-            'created_at' => date("Y-m-d H:i:s"),
-            'updated_at' => date("Y-m-d H:i:s"),
-        ]);
-
         DB::table('invoice_settings')->insert([
             'name' => 'PENDING',
             'group' => 'status',

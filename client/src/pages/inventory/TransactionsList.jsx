@@ -49,11 +49,9 @@ export default function TransactionsList() {
             cancelLabel: t('common.cancel'),
         });
         if (!ok) return;
-        const task = tx.repair_id ? 'repair' : tx.invoice_id ? 'invoice' : null;
         try {
-            if (task && (tx.repair_id || tx.invoice_id)) {
-                const target = task === 'repair' ? tx.repair_id : tx.invoice_id;
-                await api.delete(`/inventory/${task}/${target}/transactions/${tx.id}`);
+            if (tx.invoice_id) {
+                await api.delete(`/inventory/invoice/${tx.invoice_id}/transactions/${tx.id}`);
             } else {
                 await api.delete(`/inventory/transactions/${tx.id}`);
             }
@@ -140,11 +138,9 @@ export default function TransactionsList() {
                                                       : '—'}
                                             </td>
                                             <td className="px-6 py-3 text-sm text-slate-600">
-                                                {tx.repair_id
-                                                    ? t('inventory.repair_source', { id: tx.repair_id })
-                                                    : tx.invoice_id
-                                                      ? t('inventory.invoice_source', { id: tx.invoice_id })
-                                                      : '—'}
+                                                {tx.invoice_id
+                                                    ? t('inventory.invoice_source', { id: tx.invoice_id })
+                                                    : '—'}
                                             </td>
                                             <td className="px-6 py-3 text-sm text-slate-600">
                                                 {formatDate(tx.created_at)}

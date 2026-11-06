@@ -2,10 +2,8 @@
 namespace App\Http\Controllers;
 use App;
 
-use App\Models\InvoiceItem;
 use App\Models\Invoice;
 use App\Models\Payment;
-use App\Models\Repair;
 
 class AdminController extends Controller
 {
@@ -61,10 +59,6 @@ class AdminController extends Controller
 
         $unpaid_invoices = Invoice::where('balance', '>', 0)->where('active','yes')->count();
 
-        $repair_items = InvoiceItem::select('ref')->where('group','repair');
-        $repairs_no_invoice = Repair::wherenotin('id',$repair_items)->where('active','yes')->count();
-         
-
-        return view('home',compact('current_year_income','past_year_income','unpaid_invoices','repairs_no_invoice'));
+        return view('home',compact('current_year_income','past_year_income','unpaid_invoices'));
     }
 }

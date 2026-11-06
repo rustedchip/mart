@@ -13,7 +13,6 @@ use App\Models\InvoiceItem;
 use App\Models\Invoice;
 use App\Models\Log;
 use App\Models\Payment;
-use App\Models\Repair;
 use App\Models\Setting;
 
 
@@ -388,48 +387,6 @@ class InventoryController extends Controller
                 return redirect()->route('view-invoice', $id)->with('error', Lang::get('repair-business.error_product-is-out-of-stock'))->with('alert', 'alert-danger');
             }
         }
-
-        if ($task == 'repair') {
-
-            $product = InventoryProduct::findOrFail($product_id);
-            $repair = Repair::findOrFail($id);
-
-            $purchases = InventoryTransaction::where('product_id', $product->id)->where('transaction', 'purchase')->sum('quantity');
-            $sells = InventoryTransaction::where('product_id', $product->id)->where('transaction', 'sell')->sum('quantity');
-            $stock = $purchases - $sells;
-
-            if ($stock > 0) {
-
-                $check_transaction = InventoryTransaction::where('product_id', $product_id)->where('repair_id', $id)->first();
-
-                if ($check_transaction) {
-                    $inventory_transaction = $check_transaction;
-                    $inventory_transaction->quantity = $inventory_transaction->quantity + 1;
-                    $inventory_transaction->save();
-                } else {
-
-                    $inventory_transaction = new InventoryTransaction();
-                    $inventory_transaction->product_id = $product_id;
-                    $inventory_transaction->repair_id = $id;
-                    $inventory_transaction->transaction = 'sell';
-                    $inventory_transaction->selling_price = $product->selling_price;
-                    $inventory_transaction->quantity = 1;
-                    $inventory_transaction->save();
-                }
-
-                $log = new Log;
-                $log->table = 'inventory_transactions';
-                $log->data = 'Inventory Transaction has been Created';
-                $log->ref = $inventory_transaction->id;
-                $log->user = Auth::user()->id;
-                $log->save();
-
-                return redirect()->route('view-repair', $id)->with('error', Lang::get('repair-business.transaction-has-been-created'))->with('alert', 'alert-success');
-            } else {
-
-                return redirect()->route('view-repair', $id)->with('error', Lang::get('repair-business.error_product-is-out-of-stock'))->with('alert', 'alert-danger');
-            }
-        }
     }
 
     public function inventory_cancel_transaction($task, $id, $transaction)
@@ -463,21 +420,6 @@ class InventoryController extends Controller
             $log->save();
 
             return redirect()->route('view-invoice', $id)->with('error',Lang::get('repair-business.error_transaction-has-been-deleted'))->with('alert', 'alert-danger');
-        }
-
-        if ($task == 'repair') {
-
-            $transaction = InventoryTransaction::findOrFail($transaction);
-            $transaction->delete();
-
-            $log = new Log;
-            $log->table = 'inventory_transactions';
-            $log->data = 'Inventory Transaction has been Deleted';
-            $log->ref = $transaction->id;
-            $log->user = Auth::user()->id;
-            $log->save();
-
-            return redirect()->route('view-repair', $id)->with('error',Lang::get('repair-business.error_transaction-has-been-deleted'))->with('alert', 'alert-danger');
         }
     }
 

@@ -317,67 +317,6 @@
             </div>
         @endif
 
-        @if ($report_data['repairs'] == 'on')
-            <div class="section">
-                <p class="section-title">{{ __('repair-business.repairs') }}</p>
-                @if (!$repairs->isEmpty())
-                    <table class="stat-strip">
-                        <tr>
-                            <td class="center">{{ __('repair-business.repairs') }}<br><span class="stat-value">{{ $repair_data['count'] }}</span></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                    </table>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th style="width:30px;">{{ __('repair-business.table_id') }}</th>
-                                <th>{{ __('repair-business.table_customer') }}</th>
-                                <th>{{ __('repair-business.table_target') }}</th>
-                                <th>{{ __('repair-business.table_request') }}</th>
-                                <th>{{ __('repair-business.table_status') }}</th>
-                                <th>{{ __('repair-business.table_priority') }}</th>
-                                <th style="width:80px;">{{ __('repair-business.table_date') }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($repairs as $repair)
-                                @php
-                                    $rsb = $repair->status_data ? ($badges[$repair->status_data->color] ?? $badges['secondary']) : null;
-                                    $rpb = $repair->priority_data ? ($badges[$repair->priority_data->color] ?? $badges['secondary']) : null;
-                                @endphp
-                                <tr class="{{ $loop->iteration % 2 === 0 ? 'alt' : '' }}">
-                                    <td>{{ $repair->id }}</td>
-                                    <td>
-                                        @if ($repair->customer_data)
-                                            <div class="cell-strong">{{ $repair->customer_data->first_name }} {{ $repair->customer_data->last_name }}</div>
-                                            <p class="sub-line">{{ preg_replace("/^(\d{3})(\d{3})(\d{4})$/", "$1-$2-$3", $repair->customer_data->phone) }}</p>
-                                            <p class="sub-line">{{ $repair->customer_data->email }}</p>
-                                        @endif
-                                    </td>
-                                    <td>{{ $repair->target }}</td>
-                                    <td>{{ $repair->request }}</td>
-                                    <td>
-                                        @if ($rsb)
-                                            <span class="badge-inline" style="background:{{ $rsb['background'] }};color:{{ $rsb['color'] }};">{{ $repair->status_data->name }}</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if ($rpb)
-                                            <span class="badge-inline" style="background:{{ $rpb['background'] }};color:{{ $rpb['color'] }};">{{ $repair->priority_data->name }}</span>
-                                        @endif
-                                    </td>
-                                    <td>{{ date('M d, Y', strtotime($repair->created_at)) }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                @else
-                    <div class="no-data">{{ __('repair-business.no-information-to-show') }}</div>
-                @endif
-            </div>
-        @endif
-
         @if ($report_data['payments'] == 'on')
             <div class="section">
                 <p class="section-title">{{ __('repair-business.payments') }}</p>

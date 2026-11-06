@@ -101,7 +101,7 @@
         </div>
         <div class="content">
             <div class=" m-b-md ">
-                <p class="title">{{ config('app.name', 'REPAIR-HERO') }}</p>
+                <p class="title">{{ config('app.name', 'MART') }}</p>
                 <p style="font-size:15px;color:black">Powered by <a href="https://thinkervolt.com"
                         style="font-weight: bold; font-family:arial; color:black;text-decoration:none;">thinkervolt<a>
                 </p>

@@ -3,8 +3,6 @@ import {
     Users,
     UserPlus,
     UsersRound,
-    Wrench,
-    CirclePlus,
     Settings,
     FileText,
     FilePlus,
@@ -27,14 +25,6 @@ export const NAV_SECTIONS = [
         items: [
             { label: 'nav.all_customers', to: '/customers', icon: Users },
             { label: 'nav.create_customer', to: '/customers/create', icon: UserPlus },
-        ],
-    },
-    {
-        section: 'nav.repairs',
-        items: [
-            { label: 'nav.all_repairs', to: '/repairs', icon: Wrench },
-            { label: 'nav.create_repair', to: '/repairs/create', icon: CirclePlus },
-            { label: 'nav.settings', to: '/repairs/settings', icon: Settings },
         ],
     },
     {

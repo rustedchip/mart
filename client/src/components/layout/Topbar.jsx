@@ -17,7 +17,6 @@ function NotificationPill({ count }) {
 
 const NOTIFICATION_ROUTES = {
     'view-customer': (ref) => `/customers/${ref}`,
-    'view-repair': (ref) => `/repairs/${ref}`,
     'view-invoice': (ref) => `/invoices/${ref}`,
     'view-product': (ref) => `/inventory/products/${ref}`,
     'view-payment': (ref) => `/payments/${ref}`,

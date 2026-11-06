@@ -63,7 +63,6 @@
                                     <th scope="col">{{ __('repair-business.table_date') }}</th>
                                     <th scope="col">{{ __('repair-business.table_transaction') }}</th>
                                     <th scope="col">{{ __('repair-business.table_invoice') }}</th>
-                                    <th scope="col">{{ __('repair-business.table_repair') }}</th>
                                     <th scope="col">{{ __('repair-business.table_product') }}</th>
                                     <th scope="col">{{ __('repair-business.table_quantity') }}</th>
                                     <th scope="col">{{ __('repair-business.table_supplier') }}</th>
@@ -80,12 +79,6 @@
                                             @if (isset($transaction->invoice_id))
                                                 <a
                                                     href="{{ route('view-invoice', $transaction->invoice_id) }}">{{ $transaction->invoice_id }}</a>
-                                            @endif
-                                        </td>
-                                        <td>
-                                            @if (isset($transaction->repair_id))
-                                                <a
-                                                    href="{{ route('view-repair', $transaction->repair_id) }}">{{ $transaction->repair_id }}</a>
                                             @endif
                                         </td>
                                         <td>{{ $transaction->product->name }}</td>

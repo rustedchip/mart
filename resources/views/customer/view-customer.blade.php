@@ -166,16 +166,6 @@
                     </div>
                 </form>
 
-
-
-                <div class="form-group row m-0">
-                    <div class="col-sm-2"> </div>
-                    <div class="col-sm-10">
-                        <a href="{{ route('create-repair', $customer) }}" class="btn btn-primary mt-1 mb-2 btn-sm"><i
-                                class="fas fa-wrench"></i> {{ __('repair-business.button_create-repair') }}</a>
-                    </div>
-                </div>
-
                 <p class="d-block d-sm-inline m-0 small">id: {{ $customer->id }}</p>
                 <p class="d-block d-sm-inline m-0 small">created_at: {{ $customer->created_at }}</p>
                 <p class="d-block d-sm-inline m-0 small">updated_at: {{ $customer->updated_at }}</p>
@@ -183,75 +173,6 @@
             </div>
 
         </div>
-
-        <h4 class="mt-2">{{ __('repair-business.repairs') }}</h4>
-        @if (!$repairs->isEmpty())
-            <hr>
-
-            <div class="table-responsive">
-
-                <table class="table table-sm mt-3 table-hover ">
-                    <thead>
-                        <tr>
-                            <th scope="col">{{ __('repair-business.table_id') }}</th>
-                            <th scope="col">{{ __('repair-business.table_target') }}</th>
-                            <th scope="col">{{ __('repair-business.table_request') }}</th>
-                            <th scope="col">{{ __('repair-business.table_status') }}</th>
-                            <th scope="col">{{ __('repair-business.table_priority') }}</th>
-                            <th scope="col"></th>
-                            <th scope="col"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                        @foreach ($repairs as $repair)
-                            <tr>
-                                <td>{{ $repair->id }}</td>
-                                <td>{{ $repair->target }}</td>
-                                <td>{{ $repair->request }}</td>
-                                <td>
-                                    @if (isset($repair->status))
-                                        <p
-                                            class="font-weight-bold text-uppercase m-0 p-0 text-{{ $repair->status_data->color ?? '' }}">
-                                            {{ $repair->status_data->name ?? '' }} </p>
-                                    @endif
-                                </td>
-                                <td>
-                                    @if (isset($repair->priority))
-                                        <p
-                                            class="font-weight-bold text-uppercase m-0 p-0 text-{{ $repair->priority_data->color ?? '' }}">
-                                            {{ $repair->priority_data->name ?? '' }} </p>
-                                    @endif
-                                </td>
-                                <td>{{ date_format($repair->created_at, 'M d, Y') }}</td>
-                                <td class="text-right">
-                                    <a class="btn btn-primary btn-sm"
-                                        href="{{ route('view-repair', $repair) }}"><i class="fas fa-binoculars"></i>
-                                        View</a>
-                                    @if (isset($task))
-                                        @if ($task == 'invoice')
-                                            <form class="mt-1" method="POST"
-                                                action="{{ route('create-item-repair-invoice', [$repair, $id]) }}">
-                                                @csrf
-
-                                                <button type="submit" class="btn btn-primary btn-sm"><i
-                                                        class="fas fa-plus"></i> {{ __('repair-business.button_add-to-invoice') }}</a>
-                                            </form>
-                                        @endif
-                                    @endif
-                                </td>
-                            </tr>
-                        @endforeach
-
-                    </tbody>
-                </table>
-                {{ $repairs->links() }}
-            </div>
-        @else
-            <div class="alert alert-secondary" role="alert">
-                {{ __('repair-business.no-information-to-show') }}
-            </div>
-        @endif
 
         <h4 class="mt-2">{{ __('repair-business.invoices') }}</h4>
         @if (!$invoices->isEmpty())
